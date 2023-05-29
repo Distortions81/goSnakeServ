@@ -4,48 +4,7 @@ import (
 	"encoding/json"
 	"goSnakeServ/cwlog"
 	"os"
-	"time"
 )
-
-/* Change list accessed date */
-func updateAccessed(pass string) {
-	dbMutex.Lock()
-	defer dbMutex.Unlock()
-
-	for i := range authData.Builds {
-		if authData.Builds[i].Pass == pass {
-			authData.Builds[i].LastAccessed = time.Now().Unix()
-			authData.Builds[i].AuthorizationCount++
-			dbDirty = true
-			return
-		}
-	}
-}
-
-/* Disable entries that past max life */
-func pruneExpired() {
-	dbMutex.Lock()
-	defer dbMutex.Unlock()
-
-	pruned := false
-
-	for i := range authData.Builds {
-		if authData.Builds[i].Valid {
-			if time.Since(time.Unix(authData.Builds[i].Birth, 0)) > time.Duration(authData.Builds[i].Lifespan)*time.Hour {
-				authData.Builds[i].Valid = false
-				pruned = true
-				dbDirty = true
-				cwlog.DoLog(true, "Pruned: %v ", authData.Builds[i].VersionString)
-			}
-		}
-
-	}
-
-	if pruned {
-		go writeDB(false)
-	}
-
-}
 
 /* Read database from disk */
 func readDB() error {

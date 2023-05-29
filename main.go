@@ -21,7 +21,7 @@ func main() {
 	defer time.Sleep(time.Second)
 
 	/* Limit memory use just in case */
-	debug.SetMemoryLimit(100 * 1024 * 1024)
+	debug.SetMemoryLimit(1000 * 1024 * 1024)
 
 	/* Download server */
 	//fileServer = http.FileServer(http.Dir("www"))
@@ -32,7 +32,6 @@ func main() {
 		cwlog.DoLog(true, "Error loading secrets: %v", err)
 	} else {
 		cwlog.DoLog(true, "Loaded db.")
-		pruneExpired()
 	}
 
 	writeDB(true)

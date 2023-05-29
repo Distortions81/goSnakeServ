@@ -13,7 +13,7 @@ const (
 )
 
 var (
-	authData    = dbDataType{BaseDownloadPath: "https://mywebsite/dlPath/", DefaultLifeHours: 200, Builds: []buildDataType{}}
+	authData    = dbDataType{Version: "0001"}
 	dbMutex     sync.Mutex
 	dbDirty     bool
 	newestBuild buildInfoType = buildInfoType{}
@@ -21,10 +21,7 @@ var (
 
 /* Main database struct */
 type dbDataType struct {
-	PushPass         string
-	BaseDownloadPath string
-	DefaultLifeHours int
-	Builds           []buildDataType
+	Version string
 }
 
 /* Individual builds */

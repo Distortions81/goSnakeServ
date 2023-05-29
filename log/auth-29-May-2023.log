@@ -1,0 +1,4 @@
+ 0:47.41:         main.go:   34: Loaded db.
+ 0:47.41:           db.go:   50: Wrote database.
+ 0:47.41:         main.go:   45: Loaded certs.
+ 0:47.41:         main.go:   70: Starting server...
