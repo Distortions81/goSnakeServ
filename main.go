@@ -21,7 +21,8 @@ func main() {
 	defer time.Sleep(time.Second)
 
 	/* Limit memory use just in case */
-	debug.SetMemoryLimit(1000 * 1024 * 1024)
+	debug.SetMemoryLimit(1024 * 1024)
+	//kb, mb
 
 	/* Download server */
 	//fileServer = http.FileServer(http.Dir("www"))
