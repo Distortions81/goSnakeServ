@@ -1,8 +1,8 @@
 package main
 
 import (
-	"F38Auth/cwlog"
 	"encoding/json"
+	"goSnakeServ/cwlog"
 	"os"
 	"time"
 )

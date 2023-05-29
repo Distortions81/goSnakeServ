@@ -1,8 +1,8 @@
 package main
 
 import (
-	"F38Auth/cwlog"
 	"crypto/tls"
+	"goSnakeServ/cwlog"
 	"net/http"
 	"runtime/debug"
 	"time"
