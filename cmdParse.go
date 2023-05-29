@@ -9,8 +9,7 @@ import (
 func commandParser(input string, w http.ResponseWriter) {
 
 	/* Remove newlines */
-	input = strings.ReplaceAll(input, "\n", "")
-	input = strings.ReplaceAll(input, "\r", "")
+	input = strings.TrimSuffix(input, "\n")
 
 	cmdPart := strings.Split(input, ":")
 	pLen := len(cmdPart)
@@ -19,10 +18,10 @@ func commandParser(input string, w http.ResponseWriter) {
 		return
 	}
 
-	if cmdPart[0] == "test" { /* Check for updates */
-		cwlog.DoLog(true, "test: '%v'", cmdPart[1])
+	if cmdPart[0] == "Hello" { /* Check for updates */
+		cwlog.DoLog(true, "hello: '%v'", cmdPart[1])
 
-		_, err := w.Write([]byte("test"))
+		_, err := w.Write([]byte("Greetings\n"))
 		if err != nil {
 			cwlog.DoLog(true, "Error writing response:", err)
 			return
