@@ -4,7 +4,26 @@ import (
 	"encoding/json"
 	"goSnakeServ/cwlog"
 	"os"
+	"sync"
 )
+
+const (
+	dbFile = "data.json"
+
+	/* https://pkg.go.dev/time#pkg-constants */
+	tFormat string = "2006-01-02-15-04-05"
+)
+
+var (
+	authData = dbDataType{Version: "0001"}
+	dbMutex  sync.Mutex
+	dbDirty  bool
+)
+
+/* Main database struct */
+type dbDataType struct {
+	Version string
+}
 
 /* Read database from disk */
 func readDB() error {
