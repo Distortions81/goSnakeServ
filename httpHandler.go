@@ -25,12 +25,17 @@ func clientHandle(conn net.Conn) {
 	defer conn.Close()
 
 	for {
-		msg, op, err := wsutil.ReadClientData(conn)
+		bmsg, op, err := wsutil.ReadClientData(conn)
 		if err != nil {
 			cwlog.DoLog(true, "clientHandle: %v", err)
 			return
 		}
-		err = wsutil.WriteServerMessage(conn, op, msg)
+		msg := string(bmsg)
+
+		if msg != "test" {
+			return
+		}
+		err = wsutil.WriteServerMessage(conn, op, []byte(msg))
 		if err != nil {
 			cwlog.DoLog(true, "clientHandle: %v", err)
 			return

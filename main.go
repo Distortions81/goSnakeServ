@@ -8,9 +8,10 @@ import (
 )
 
 /* Http timeout */
-const timeOut = 15 * time.Second
-
-var fileServer http.Handler
+const (
+	timeOut = 15 * time.Second
+	port    = ":8080"
+)
 
 func main() {
 
@@ -33,7 +34,8 @@ func main() {
 
 	writeDB(true)
 
-	http.ListenAndServe(":8080", http.HandlerFunc(httpsHandler))
+	cwlog.DoLog(true, "starting websocket server on port %v", port)
+	http.ListenAndServe(port, http.HandlerFunc(httpsHandler))
 
 	cwlog.DoLog(true, "Goodbye.")
 }
