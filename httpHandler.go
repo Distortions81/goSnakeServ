@@ -17,7 +17,7 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go clientHandle(conn)
+	clientHandle(conn)
 
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"goSnakeServ/cwlog"
 	"net/http"
 	"runtime/debug"
@@ -34,8 +35,42 @@ func main() {
 
 	writeDB(true)
 
-	cwlog.DoLog(true, "starting websocket server on port %v", port)
-	http.ListenAndServe(port, http.HandlerFunc(httpsHandler))
+	/* Load certificates */
+	cert, err := tls.LoadX509KeyPair("fullchain.pem", "privkey.pem")
+	if err != nil {
+		cwlog.DoLog(true, "Error loading TLS key pair: %v (fullchain.pem, privkey.pem)", err)
+		return
+	}
+	cwlog.DoLog(true, "Loaded certs.")
+
+	/* HTTPS server */
+	http.HandleFunc("/", httpsHandler)
+
+	/* Create TLS configuration */
+	config := &tls.Config{
+		Certificates:       []tls.Certificate{cert},
+		InsecureSkipVerify: true,
+	}
+
+	/* Create HTTPS server */
+	server := &http.Server{
+		Addr:         port,
+		Handler:      http.DefaultServeMux,
+		TLSConfig:    config,
+		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
+
+		ReadTimeout:  timeOut,
+		WriteTimeout: timeOut,
+		IdleTimeout:  timeOut,
+	}
+
+	// Start server
+	cwlog.DoLog(true, "Starting server...")
+	err = server.ListenAndServeTLS("", "")
+	if err != nil {
+		cwlog.DoLog(true, "ListenAndServeTLS: %v", err)
+		panic(err)
+	}
 
 	cwlog.DoLog(true, "Goodbye.")
 }
