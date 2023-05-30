@@ -1,7 +1,7 @@
 package main
 
 const (
-	MAX_BOARD_SIZE = 0xFFFF
+	MAX_BOARD_SIZE = 0xFF
 
 	DIR_NONE  = 0
 	DIR_NORTH = 1

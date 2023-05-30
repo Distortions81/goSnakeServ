@@ -2,36 +2,38 @@ package main
 
 import (
 	"goSnakeServ/cwlog"
-	"io"
+	"net"
 	"net/http"
+
+	"github.com/gobwas/ws"
+	"github.com/gobwas/ws/wsutil"
 )
 
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
-	/* Incoming get? Send to file server */
-	if r.Method == http.MethodGet {
-		cwlog.DoLog(true, "File request: %v", r.RequestURI)
-		fileServer.ServeHTTP(w, r)
-		return
-	} else if r.Method != http.MethodPost {
-		/* Anything other than get or post, just silently reject it */
-		return
-	}
-
-	/* Read body */
-	bytes, err := io.ReadAll(r.Body)
+	conn, _, _, err := ws.UpgradeHTTP(r, w)
 	if err != nil {
-		cwlog.DoLog(true, "Error reading request body: %v", err)
-		return
-	}
-	input := string(bytes)
-
-	/* Empty body, silently reject */
-	if input == "" {
-		cwlog.DoLog(true, "empty body")
+		cwlog.DoLog(true, "httpsHandler: %v", err)
 		return
 	}
 
-	/* Send to command parser */
-	commandParser(input, w)
+	go clientHandle(conn)
+
+}
+
+func clientHandle(conn net.Conn) {
+	defer conn.Close()
+
+	for {
+		msg, op, err := wsutil.ReadClientData(conn)
+		if err != nil {
+			cwlog.DoLog(true, "clientHandle: %v", err)
+			return
+		}
+		err = wsutil.WriteServerMessage(conn, op, msg)
+		if err != nil {
+			cwlog.DoLog(true, "clientHandle: %v", err)
+			return
+		}
+	}
 }
