@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gobwas/ws"
-	"github.com/gobwas/ws/wsutil"
 )
 
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,23 +21,9 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func clientHandle(conn net.Conn) {
-	defer conn.Close()
-
-	for {
-		bmsg, op, err := wsutil.ReadClientData(conn)
-		if err != nil {
-			cwlog.DoLog(true, "clientHandle: %v", err)
-			return
-		}
-		msg := string(bmsg)
-
-		if msg != "test" {
-			return
-		}
-		err = wsutil.WriteServerMessage(conn, op, []byte(msg))
-		if err != nil {
-			cwlog.DoLog(true, "clientHandle: %v", err)
-			return
-		}
+	var input []byte
+	_, err := conn.Read(input)
+	if err != nil {
+		cwlog.DoLog(true, "clientHandle: %v", err)
 	}
 }
