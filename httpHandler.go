@@ -2,28 +2,32 @@ package main
 
 import (
 	"goSnakeServ/cwlog"
-	"net"
+	"io"
 	"net/http"
-
-	"github.com/gobwas/ws"
 )
 
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
-	conn, _, _, err := ws.UpgradeHTTP(r, w)
-	if err != nil {
-		cwlog.DoLog(true, "httpsHandler: %v", err)
+	/* Incoming get? Send to file server */
+	if r.Method != http.MethodPost {
+		/* Anything other than get or post, just silently reject it */
 		return
 	}
 
-	clientHandle(conn)
-
-}
-
-func clientHandle(conn net.Conn) {
-	var input []byte
-	_, err := conn.Read(input)
+	/* Read body */
+	bytes, err := io.ReadAll(r.Body)
 	if err != nil {
-		cwlog.DoLog(true, "clientHandle: %v", err)
+		cwlog.DoLog(true, "Error reading request body: %v", err)
+		return
 	}
+	input := string(bytes)
+
+	/* Empty body, silently reject */
+	if input == "" {
+		cwlog.DoLog(true, "empty body")
+		return
+	}
+
+	/* Send to command parser */
+	commandParser(input, w)
 }
