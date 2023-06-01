@@ -5,7 +5,22 @@ import (
 	"goSnakeServ/cwlog"
 	"net/http"
 	"strings"
+	"time"
+
+	"golang.org/x/exp/rand"
 )
+
+func init() {
+	lobbyList = []lobbyData{
+		{
+			Name:    "Test",
+			ID:      uint64(rand.Int63()),
+			Ticks:   323,
+			Started: time.Now(),
+			Level:   1,
+		},
+	}
+}
 
 func commandParser(input string, w http.ResponseWriter) {
 
@@ -22,11 +37,7 @@ func commandParser(input string, w http.ResponseWriter) {
 	if cmdPart[0] == "list" { /* Check for updates */
 		cwlog.DoLog(true, "list: '%v'", cmdPart[1])
 
-		var lobList [
-		for _, name := range lobbyList {
-		}
-		
-		b, _ := json.Marshal(lobbyData)
+		b, _ := json.Marshal(lobbyList)
 		writeByteTo(w, "list", b)
 
 		return

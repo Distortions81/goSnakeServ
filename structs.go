@@ -23,7 +23,7 @@ type lobbyData struct {
 	Started time.Time
 	EndTime time.Time
 	Level   uint16
-	Tiles   [MAX_BOARD_SIZE][MAX_BOARD_SIZE]bool
+	//Tiles   [MAX_BOARD_SIZE][MAX_BOARD_SIZE]bool
 
 	Listing lobbyListing
 	Lock    sync.Mutex
