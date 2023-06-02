@@ -5,12 +5,13 @@ import (
 )
 
 type lobbyData struct {
-	ID      uint64
-	Name    string
+	ID   uint64
+	Name string
+
 	Players []playerData
 	Ticks   uint64
 	Level   uint16
-	tiles   [MAX_BOARD_SIZE][MAX_BOARD_SIZE]bool
+	tiles   map[XY]bool
 
 	lock sync.Mutex
 }
