@@ -6,18 +6,15 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	"golang.org/x/exp/rand"
 )
 
 func init() {
 	lobbyList = []lobbyData{
 		{
-			Name:    "Test",
-			ID:      uint64(rand.Int63()),
-			Ticks:   323,
-			Started: time.Now(),
-			Level:   1,
+			Name:  "Test",
+			ID:    uint64(time.Now().UnixNano()),
+			Ticks: 323,
+			Level: 1,
 		},
 	}
 }

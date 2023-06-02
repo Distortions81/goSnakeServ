@@ -2,7 +2,6 @@ package main
 
 import (
 	"sync"
-	"time"
 )
 
 type lobbyListing struct {
@@ -20,10 +19,8 @@ type lobbyData struct {
 	Name    string
 	Players []playerData
 	Ticks   uint64
-	Started time.Time
-	EndTime time.Time
 	Level   uint16
-	//Tiles   [MAX_BOARD_SIZE][MAX_BOARD_SIZE]bool
+	tiles   [MAX_BOARD_SIZE][MAX_BOARD_SIZE]bool
 
 	Listing lobbyListing
 	Lock    sync.Mutex
