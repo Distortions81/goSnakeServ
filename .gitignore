@@ -1,3 +1,4 @@
 fullchain.pem
 privkey.pem
 log/*.log
+goSnakeServ

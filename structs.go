@@ -4,16 +4,6 @@ import (
 	"sync"
 )
 
-type lobbyListing struct {
-	Name        string
-	PlayerCount string
-	PlayerNames string
-	Started     string
-	Remaining   string
-	BoardSize   uint8
-	Level       uint16
-}
-
 type lobbyData struct {
 	ID      uint64
 	Name    string
@@ -22,8 +12,7 @@ type lobbyData struct {
 	Level   uint16
 	tiles   [MAX_BOARD_SIZE][MAX_BOARD_SIZE]bool
 
-	Listing lobbyListing
-	Lock    sync.Mutex
+	lock sync.Mutex
 }
 
 type playerData struct {
