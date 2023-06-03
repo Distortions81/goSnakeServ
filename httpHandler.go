@@ -17,8 +17,6 @@ func makeID() int64 {
 	return time.Now().UnixNano()
 }
 
-const readSleep = time.Millisecond * 100
-
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
 	sessionID := makeID()
@@ -42,6 +40,4 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 	if !commandParser(input, w, &player) {
 		return
 	}
-
-	time.Sleep(readSleep)
 }
