@@ -20,6 +20,7 @@ type playerData struct {
 	ID   int64
 	Name string
 
+	InLobby   *lobbyData
 	Dead      bool
 	Length    uint32
 	Tiles     []XY

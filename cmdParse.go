@@ -26,15 +26,8 @@ func commandParser(input string, w http.ResponseWriter, player *playerData) {
 	input = strings.TrimSuffix(input, "\n")
 
 	cmdPart := strings.Split(input, ":")
-	pLen := len(cmdPart)
-	if pLen < 2 {
-		cwlog.DoLog(true, "Invalid number of arguments.")
-		return
-	}
 
-	if cmdPart[0] == "init" {
-
-	} else if cmdPart[0] == "list" { /* List lobbies */
+	if cmdPart[0] == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
 		writeByteTo(w, "list", b)
 
