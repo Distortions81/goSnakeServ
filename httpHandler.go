@@ -4,30 +4,47 @@ import (
 	"goSnakeServ/cwlog"
 	"io"
 	"net/http"
+	"sync"
+	"time"
 )
+
+var clientIDLock sync.Mutex
+
+func makeUserID() int64 {
+	clientIDLock.Lock()
+	defer clientIDLock.Unlock()
+
+	return time.Now().UnixNano()
+}
 
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
-	/* Incoming get? Send to file server */
-	if r.Method != http.MethodPost {
-		/* Anything other than get or post, just silently reject it */
-		return
-	}
+	clientID := makeUserID()
+	player := playerData{ID: clientID}
 
-	/* Read body */
-	bytes, err := io.ReadAll(r.Body)
-	if err != nil {
-		cwlog.DoLog(true, "Error reading request body: %v", err)
-		return
-	}
-	input := string(bytes)
+	for {
+		/* Incoming get? Send to file server */
+		if r.Method != http.MethodPost {
+			/* Anything other than get or post, just silently reject it */
+			return
+		}
 
-	/* Empty body, silently reject */
-	if input == "" {
-		cwlog.DoLog(true, "empty body")
-		return
-	}
+		/* Read body */
+		bytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			cwlog.DoLog(true, "Error reading request body: %v", err)
+			return
+		}
+		input := string(bytes)
 
-	/* Send to command parser */
-	commandParser(input, w)
+		/* Empty body, silently reject */
+		if input == "" {
+			cwlog.DoLog(true, "empty body")
+			return
+		}
+
+		/* Send to command parser */
+		commandParser(input, w, &player)
+
+	}
 }

@@ -8,7 +8,7 @@ type lobbyData struct {
 	ID   uint64
 	Name string
 
-	Players []playerData
+	Players []*playerData
 	Ticks   uint64
 	Level   uint16
 	tiles   map[XY]bool
@@ -17,7 +17,7 @@ type lobbyData struct {
 }
 
 type playerData struct {
-	ID   uint64
+	ID   int64
 	Name string
 
 	Dead      bool

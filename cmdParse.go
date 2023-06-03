@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"goSnakeServ/cwlog"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -19,7 +20,7 @@ func init() {
 	}
 }
 
-func commandParser(input string, w http.ResponseWriter) {
+func commandParser(input string, w http.ResponseWriter, player *playerData) {
 
 	/* Remove newlines */
 	input = strings.TrimSuffix(input, "\n")
@@ -31,16 +32,34 @@ func commandParser(input string, w http.ResponseWriter) {
 		return
 	}
 
-	if cmdPart[0] == "list" { /* Check for updates */
-		cwlog.DoLog(true, "list: '%v'", cmdPart[1])
+	if cmdPart[0] == "init" {
 
+	} else if cmdPart[0] == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
 		writeByteTo(w, "list", b)
 
-		return
+	} else if cmdPart[0] == "join" { /* Join a lobby */
+		inputID, err := strconv.ParseUint(cmdPart[1], 10, 64)
+		if err != nil {
+			cwlog.DoLog(true, "commandParser: Join: Error: %v", err)
+			return
+		}
+		for _, lob := range lobbyList {
+
+			if lob.ID == uint64(inputID) {
+				lob.Players = append(lob.Players, player)
+			}
+		}
+		b, _ := json.Marshal(lobbyList)
+		writeByteTo(w, "list", b)
+
+	} else if cmdPart[0] == "name" { /* Join a lobby */
+
 	} else {
 		cwlog.DoLog(true, "Unknown Command.")
+		return
 	}
+	cwlog.DoLog(true, "%v: '%v'", cmdPart[0], cmdPart[1])
 }
 
 func writeByteTo(w http.ResponseWriter, command string, input []byte) {
