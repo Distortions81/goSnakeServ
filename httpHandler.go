@@ -10,25 +10,28 @@ import (
 
 var clientIDLock sync.Mutex
 
-func makeUserID() int64 {
+func makeID() int64 {
 	clientIDLock.Lock()
 	defer clientIDLock.Unlock()
 
 	return time.Now().UnixNano()
 }
 
+const readSleep = time.Millisecond * 100
+
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
-	clientID := makeUserID()
-	player := playerData{ID: clientID}
+	sessionID := makeID()
+	player := playerData{ID: sessionID}
+
+	/* Incoming get? Send to file server */
+	if r.Method != http.MethodPost {
+		/* Anything other than get or post, just silently reject it */
+		return
+	}
+	cwlog.DoLog(true, "Starting read loop.")
 
 	for {
-		/* Incoming get? Send to file server */
-		if r.Method != http.MethodPost {
-			/* Anything other than get or post, just silently reject it */
-			return
-		}
-
 		/* Read body */
 		bytes, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -47,5 +50,6 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		time.Sleep(readSleep)
 	}
 }
