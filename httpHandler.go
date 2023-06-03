@@ -39,12 +39,13 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
 		/* Empty body, silently reject */
 		if input == "" {
-			cwlog.DoLog(true, "empty body")
-			return
+			continue
 		}
 
 		/* Send to command parser */
-		commandParser(input, w, &player)
+		if !commandParser(input, w, &player) {
+			return
+		}
 
 	}
 }

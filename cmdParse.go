@@ -20,7 +20,7 @@ func init() {
 	}
 }
 
-func commandParser(input string, w http.ResponseWriter, player *playerData) {
+func commandParser(input string, w http.ResponseWriter, player *playerData) bool {
 
 	/* Remove newlines */
 	input = strings.TrimSuffix(input, "\n")
@@ -29,41 +29,44 @@ func commandParser(input string, w http.ResponseWriter, player *playerData) {
 
 	if cmdPart[0] == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
-		writeByteTo(w, "list", b)
+		return writeByteTo(w, "list", b)
 
 	} else if cmdPart[0] == "join" { /* Join a lobby */
 		inputID, err := strconv.ParseUint(cmdPart[1], 10, 64)
 		if err != nil {
 			cwlog.DoLog(true, "commandParser: Join: Error: %v", err)
-			return
+			return false
 		}
 		for _, lob := range lobbyList {
-
 			if lob.ID == uint64(inputID) {
 				lob.Players = append(lob.Players, player)
+				b, _ := json.Marshal(lob.ID)
+				return writeByteTo(w, "joined", b)
 			}
 		}
-		b, _ := json.Marshal(lobbyList)
-		writeByteTo(w, "list", b)
 
 	} else if cmdPart[0] == "name" { /* Join a lobby */
 
 	} else {
 		cwlog.DoLog(true, "Unknown Command.")
-		return
+		return false
 	}
 	cwlog.DoLog(true, "%v: '%v'", cmdPart[0], cmdPart[1])
+
+	return true
 }
 
-func writeByteTo(w http.ResponseWriter, command string, input []byte) {
+func writeByteTo(w http.ResponseWriter, command string, input []byte) bool {
 	buf := []byte(command + ":")
 	buf = append(buf[:], input[:]...)
 
 	_, err := w.Write(buf)
 	if err != nil {
 		cwlog.DoLog(true, "Error writing response:", err)
-		return
+		return false
 	}
+
+	return true
 }
 
 func writeStringTo(w http.ResponseWriter, command string, input string) {
