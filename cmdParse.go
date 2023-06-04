@@ -72,11 +72,12 @@ func commandParser(input string, w http.ResponseWriter) bool {
 		return false
 
 	} else if command == "name" { /* Change player name */
-		if playerNameUnique(data) {
-			cwlog.DoLog(true, "Changed player '%v' (%v) name to '%v'", player.Name, player.ID, data)
-			player.Name = data
+		newName := filterName(data)
+		if playerNameUnique(newName) {
+			cwlog.DoLog(true, "Changed player '%v' (%v) name to '%v'", player.Name, player.ID, newName)
+			player.Name = newName
 		} else {
-			cwlog.DoLog(true, "Player (%v) tried to rename to a non-unique name: '%v'", data)
+			cwlog.DoLog(true, "Player (%v) tried to rename to a non-unique name: '%v'", player.ID, newName)
 		}
 		return writeTo(w, "name", "%v", player.Name)
 	} else {

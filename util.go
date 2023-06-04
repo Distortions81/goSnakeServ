@@ -50,6 +50,7 @@ func filterName(input string) string {
 	if iLen < 2 {
 		buf = genName()
 	}
+	return buf
 }
 
 var genUsernameLock sync.Mutex
