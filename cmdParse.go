@@ -12,21 +12,31 @@ import (
 
 func commandParser(input string, w http.ResponseWriter) bool {
 
-	cmdPart := strings.Split(input, ":")
-	if len(cmdPart) != 3 {
-		return false
-	}
-	cwlog.DoLog(true, "%v: %v: '%v'", cmdPart[0], cmdPart[1], cmdPart[2])
-	useridstr, command, data := cmdPart[0], cmdPart[1], cmdPart[2]
-	userid, _ := strconv.ParseUint(useridstr, 10, 64)
-
 	/* Before ID check */
-	if command == "init" {
+	if input == "init" {
 		id := makeUID()
 		newPlayer := playerData{Name: genName(), ID: id, LastActive: time.Now().UTC()}
 		players[id] = &newPlayer
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
-		return writeTo(w, "init", "%v", id)
+
+		b, err := json.Marshal(newPlayer)
+		if err != nil {
+			cwlog.DoLog(true, "commandParser: init: err: %v", err)
+			return false
+		}
+
+		return writeByte(w, b)
+	}
+
+	cmdPart := strings.Split(input, ":")
+
+	cwlog.DoLog(true, "%v: %v: '%v'", cmdPart[0], cmdPart[1], cmdPart[2])
+	useridstr, command, data := cmdPart[0], cmdPart[1], cmdPart[2]
+	userid, _ := strconv.ParseUint(useridstr, 10, 64)
+
+	if len(cmdPart) != 3 {
+		cwlog.DoLog(true, "Malformed request: %v", input)
+		return false
 	}
 
 	/* Find player, if invalid exit*/
@@ -39,7 +49,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 	if command == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
 		playerActivity(player)
-		return writeByteTo(w, "list", b)
+		return writeByte(w, b)
 
 	} else if command == "join" { /* Join a lobby */
 		inputID, err := strconv.ParseUint(data, 10, 64)
@@ -77,6 +87,15 @@ func commandParser(input string, w http.ResponseWriter) bool {
 		cwlog.DoLog(true, "Unknown Command.")
 		return false
 	}
+}
+
+func writeByte(w http.ResponseWriter, input []byte) bool {
+	_, err := w.Write(input)
+	if err != nil {
+		cwlog.DoLog(true, "Error writing response:", err)
+		return false
+	}
+	return true
 }
 
 func writeByteTo(w http.ResponseWriter, command string, input []byte) bool {
