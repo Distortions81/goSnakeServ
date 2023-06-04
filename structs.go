@@ -17,7 +17,7 @@ type lobbyData struct {
 }
 
 type playerData struct {
-	ID   int64
+	ID   uint64
 	Name string
 
 	InLobby   *lobbyData

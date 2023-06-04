@@ -4,23 +4,9 @@ import (
 	"goSnakeServ/cwlog"
 	"io"
 	"net/http"
-	"sync"
-	"time"
 )
 
-var clientIDLock sync.Mutex
-
-func makeID() int64 {
-	clientIDLock.Lock()
-	defer clientIDLock.Unlock()
-
-	return time.Now().UnixNano()
-}
-
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
-
-	sessionID := makeID()
-	player := playerData{ID: sessionID}
 
 	cwlog.DoLog(true, "Starting read loop.")
 	/* Read body */
@@ -37,7 +23,7 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/* Send to command parser */
-	if !commandParser(input, w, &player) {
+	if !commandParser(input, w) {
 		return
 	}
 }

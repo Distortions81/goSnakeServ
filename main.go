@@ -18,6 +18,7 @@ func main() {
 
 	cwlog.StartLog()
 	cwlog.LogDaemon()
+
 	/* Sleep on exit, to avoid missing log output */
 	defer time.Sleep(time.Second)
 
