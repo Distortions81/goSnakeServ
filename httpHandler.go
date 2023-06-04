@@ -8,7 +8,6 @@ import (
 
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
-	cwlog.DoLog(true, "Starting read loop.")
 	/* Read body */
 	bytes, err := io.ReadAll(r.Body)
 	if err != nil {

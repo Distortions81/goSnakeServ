@@ -1,7 +1,10 @@
 package main
 
+import "time"
+
 const (
 	MAX_BOARD_SIZE = 0xFF
+	MAX_IDLE       = time.Minute * 15
 
 	DIR_NONE  = 0
 	DIR_NORTH = 1

@@ -72,3 +72,7 @@ func playerNameUnique(input string) bool {
 	}
 	return true
 }
+
+func playerActivity(player *playerData) {
+	player.LastActive = time.Now().UTC()
+}

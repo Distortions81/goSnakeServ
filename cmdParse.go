@@ -7,20 +7,10 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
-func init() {
-	lobbyList = []lobbyData{
-		{
-			Name: "Welcome",
-		},
-	}
-}
-
 func commandParser(input string, w http.ResponseWriter) bool {
-
-	/* Remove newlines */
-	input = strings.TrimSuffix(input, "\n")
 
 	cmdPart := strings.Split(input, ":")
 	if len(cmdPart) != 3 {
@@ -33,8 +23,8 @@ func commandParser(input string, w http.ResponseWriter) bool {
 	/* Before ID check */
 	if command == "init" {
 		id := makeUID()
-		newPlayer := &playerData{Name: genName(), ID: id}
-		players[id] = newPlayer
+		newPlayer := playerData{Name: genName(), ID: id, LastActive: time.Now().UTC()}
+		players[id] = &newPlayer
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 		return writeTo(w, "init", "%v", id)
 	}
@@ -48,6 +38,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 
 	if command == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
+		playerActivity(player)
 		return writeByteTo(w, "list", b)
 
 	} else if command == "join" { /* Join a lobby */
@@ -65,6 +56,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 				lobby.Players = append(lobby.Players, player)
 				player.InLobby = &lobbyList[l]
 				cwlog.DoLog(true, "Player: %v joined lobby: %v", player.ID, inputID)
+				playerActivity(player)
 				return writeTo(w, "joined", "%v", inputID)
 			}
 		}
@@ -76,6 +68,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 		if playerNameUnique(newName) {
 			cwlog.DoLog(true, "Changed player '%v' (%v) name to '%v'", player.Name, player.ID, newName)
 			player.Name = newName
+			playerActivity(player)
 		} else {
 			cwlog.DoLog(true, "Player (%v) tried to rename to a non-unique name: '%v'", player.ID, newName)
 		}

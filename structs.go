@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"time"
 )
 
 type lobbyData struct {
@@ -17,11 +18,12 @@ type lobbyData struct {
 }
 
 type playerData struct {
-	ID   uint64
-	Name string
+	ID         uint64
+	Name       string
+	LastActive time.Time
 
 	InLobby   *lobbyData
-	Dead      bool
+	DeadFor   uint8
 	Length    uint32
 	Tiles     []XY
 	Head      XY
