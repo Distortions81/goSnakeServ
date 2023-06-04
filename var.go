@@ -5,17 +5,30 @@ func init() {
 }
 
 var testPlayerList = []*playerData{
-	{Name: "IUseArchBTW1337hax0rluserftw"},
-	{Name: "SteamDeckUser"},
-	{Name: "SnakeyMcSnakeFace"},
-	{Name: "ITHINKIAMCLEVERANDVERYFUNNYHAHAHAHA12345679ROFLMAOBBQ"},
+	{Name: "foxvenusnoodles"},
+	{Name: "cereseggleopard"},
+	{Name: "foxvealoldeuboi"},
+	{Name: "swanednamodedog"},
+	{Name: "pigvegashooting"},
+}
+
+var testPlayerListTwo = []*playerData{
+	{Name: "noobsoup"},
+	{Name: "lamerburger"},
+	{Name: "idiotsandwich"},
+	{Name: "inquisitiveidiot"},
 }
 
 var lobbyList = []lobbyData{
 	{
 		ID:      0,
-		Name:    "People sometimes use really long names for stuff and things",
+		Name:    "Test Lobby",
 		Players: testPlayerList,
+	},
+	{
+		ID:      0,
+		Name:    "n00b room",
+		Players: testPlayerListTwo,
 	},
 }
 
