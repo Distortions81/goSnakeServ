@@ -75,6 +75,8 @@ func commandParser(input string, w http.ResponseWriter) bool {
 		if playerNameUnique(data) {
 			cwlog.DoLog(true, "Changed player '%v' (%v) name to '%v'", player.Name, player.ID, data)
 			player.Name = data
+		} else {
+			cwlog.DoLog(true, "Player (%v) tried to rename to a non-unique name: '%v'", data)
 		}
 		return writeTo(w, "name", "%v", player.Name)
 	} else {
