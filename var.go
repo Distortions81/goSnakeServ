@@ -13,8 +13,7 @@ var testPlayerList = []*playerData{
 }
 
 var testPlayerListTwo = []*playerData{
-	{Name: "noobsoup"},
-	{Name: "lamerburger"},
+	{Name: "lamerburgermeisterwithbutter"},
 	{Name: "idiotsandwich"},
 	{Name: "inquisitiveidiot"},
 }
@@ -27,7 +26,7 @@ var lobbyList = []lobbyData{
 	},
 	{
 		ID:      0,
-		Name:    "n00b room",
+		Name:    "super long name n00b room with sprinkles and spam",
 		Players: testPlayerListTwo,
 	},
 }
