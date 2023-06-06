@@ -10,10 +10,29 @@ import (
 
 /* Prune and write DB if dirty */
 func backgroundTasks() {
-	for {
-		time.Sleep(time.Minute * 5)
-		writeDB(false)
-	}
+	go func() {
+		for {
+			time.Sleep(time.Minute * 5)
+			writeDB(false)
+		}
+	}()
+	go func() {
+		for {
+			lobbyLock.Lock()
+			var delList []uint64
+			for p, player := range players {
+				if time.Since(player.LastActive) > MAX_IDLE {
+					delList = append(delList, p)
+				}
+			}
+			for _, item := range delList {
+				cwlog.DoLog(true, "Deleting %v", item)
+				delete(players, item)
+			}
+			lobbyLock.Unlock()
+			time.Sleep(time.Second * 10)
+		}
+	}()
 }
 
 var userIDLock sync.Mutex

@@ -1,6 +1,11 @@
 package main
 
+import "sync"
+
 func init() {
+	lobbyLock.Lock()
+	defer lobbyLock.Unlock()
+
 	players = make(map[uint64]*playerData)
 }
 
@@ -47,3 +52,4 @@ var lobbyList = []lobbyData{
 }
 
 var players map[uint64]*playerData
+var lobbyLock sync.Mutex

@@ -4,7 +4,7 @@ import "time"
 
 const (
 	MAX_BOARD_SIZE = 0xFF
-	MAX_IDLE       = time.Minute * 15
+	MAX_IDLE       = time.Minute * 1
 
 	DIR_NONE  = 0
 	DIR_NORTH = 1
