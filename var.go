@@ -30,22 +30,22 @@ var lobbyList = []lobbyData{
 		Players: testPlayerList,
 	},
 	{
-		ID:      0,
+		ID:      1,
 		Name:    "super long name n00b room with sprinkles and spam",
 		Players: testPlayerListTwo,
 	},
 	{
-		ID:      0,
+		ID:      2,
 		Name:    "lobby lobby",
 		Players: nil,
 	},
 	{
-		ID:      0,
+		ID:      3,
 		Name:    "something somthing lobby",
 		Players: testPlayerList,
 	},
 	{
-		ID:      0,
+		ID:      4,
 		Name:    "hork bork",
 		Players: nil,
 	},
