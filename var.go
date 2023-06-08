@@ -23,7 +23,7 @@ var testPlayerListTwo = []*playerData{
 	{Name: "inquisitiveidiot"},
 }
 
-var lobbyList = []lobbyData{
+var lobbyList = []*lobbyData{
 	{
 		ID:      0,
 		Name:    "Test Lobby",

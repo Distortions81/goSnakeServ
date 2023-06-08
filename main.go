@@ -38,6 +38,8 @@ func main() {
 
 	writeDB(true)
 
+	backgroundTasks()
+
 	/* Load certificates */
 	cert, err := tls.LoadX509KeyPair("fullchain.pem", "privkey.pem")
 	if err != nil {

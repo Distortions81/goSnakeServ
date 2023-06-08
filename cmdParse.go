@@ -64,7 +64,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 		for l, lobby := range lobbyList {
 			if lobby.ID == inputID {
 				lobby.Players = append(lobby.Players, player)
-				player.InLobby = &lobbyList[l]
+				player.InLobby = lobbyList[l]
 				cwlog.DoLog(true, "Player: %v joined lobby: %v", player.ID, inputID)
 				playerActivity(player)
 				return writeTo(w, "joined", "%v", inputID)
@@ -98,7 +98,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 func writeByte(w http.ResponseWriter, input []byte) bool {
 	_, err := w.Write(input)
 	if err != nil {
-		cwlog.DoLog(true, "Error writing response:", err)
+		cwlog.DoLog(true, "Error writing response: %v", err)
 		return false
 	}
 	return true
@@ -110,7 +110,7 @@ func writeByteTo(w http.ResponseWriter, command string, input []byte) bool {
 
 	_, err := w.Write(buf)
 	if err != nil {
-		cwlog.DoLog(true, "Error writing response:", err)
+		cwlog.DoLog(true, "Error writing response: %v", err)
 		return false
 	}
 

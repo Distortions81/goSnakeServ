@@ -7,10 +7,10 @@ func makePersonalLobby(player *playerData) *lobbyData {
 	lobbyLock.Lock()
 	defer lobbyLock.Unlock()
 
-	newLobby := lobbyData{Name: player.Name + "'s game", ID: player.ID, Ticks: 0, tiles: make(map[XY]bool), Level: 1}
+	newLobby := &lobbyData{Name: player.Name + "'s game", ID: player.ID, Ticks: 0, tiles: make(map[XY]bool), Level: 1}
 	lobbyList = append(lobbyList, newLobby)
 
-	lobbyAddr := &lobbyList[len(lobbyList)-1]
+	lobbyAddr := lobbyList[len(lobbyList)-1]
 	player.InLobby = lobbyAddr
 	player.MyLobby = lobbyAddr
 	return lobbyAddr
