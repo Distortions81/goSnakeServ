@@ -111,6 +111,7 @@ func genName() string {
 		if playerNameUnique(name) {
 			return name
 		}
+		cwlog.DoLog(true, "Regenerating, name dupe: %v", name)
 	}
 
 	/* Fallback */

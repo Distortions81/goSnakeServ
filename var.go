@@ -5,8 +5,12 @@ import (
 	"sync"
 )
 
-const testLobbys = 3
-const testPlayers = 7
+const testLobbys = 15
+const testPlayers = 150
+
+var lobbyList []*lobbyData
+var players map[uint64]*playerData
+var lobbyLock sync.Mutex
 
 func init() {
 	lobbyLock.Lock()
@@ -25,12 +29,7 @@ func init() {
 	}
 
 	for p := range players {
-		players[p].inLobby = lobbyList[rand.Intn(testLobbys)]
-		players[p].inLobby.Players = append(players[p].inLobby.Players, players[p])
+		rVal := rand.Intn(testLobbys)
+		lobbyList[rVal].Players = append(lobbyList[rVal].Players, players[p])
 	}
 }
-
-var lobbyList = []*lobbyData{}
-
-var players map[uint64]*playerData
-var lobbyLock sync.Mutex
