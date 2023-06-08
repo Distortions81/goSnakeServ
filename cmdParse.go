@@ -46,7 +46,10 @@ func commandParser(input string, w http.ResponseWriter) bool {
 		return false
 	}
 
-	if command == "list" { /* List lobbies */
+	if command == "ping" {
+		cwlog.DoLog(true, "Client: %v (PING)", player.ID)
+		return writeByte(w, []byte(strconv.FormatInt(time.Now().UnixNano(), 10)))
+	} else if command == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
 		playerActivity(player)
 		return writeByte(w, b)
