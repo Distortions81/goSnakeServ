@@ -23,6 +23,7 @@ type playerData struct {
 	LastActive time.Time
 
 	InLobby   *lobbyData
+	MyLobby   *lobbyData
 	DeadFor   uint8
 	Length    uint32
 	Tiles     []XY

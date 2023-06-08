@@ -83,6 +83,12 @@ func commandParser(input string, w http.ResponseWriter) bool {
 			cwlog.DoLog(true, "Player (%v) tried to rename to a non-unique name: '%v'", player.ID, newName)
 		}
 		return writeTo(w, "name", "%v", player.Name)
+	} else if command == "createLobby" {
+		newLobby := makePersonalLobby(player)
+		if newLobby != nil {
+			return writeTo(w, "createdLobby", "%v", newLobby.ID)
+		}
+		return false
 	} else {
 		cwlog.DoLog(true, "Unknown Command.")
 		return false
