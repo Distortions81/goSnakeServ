@@ -1,7 +1,7 @@
 package main
 
 func makePersonalLobby(player *playerData) *lobbyData {
-	if player.InLobby != nil || player.MyLobby != nil {
+	if player.inLobby != nil || player.myLobby != nil {
 		return nil
 	}
 	lobbyLock.Lock()
@@ -11,7 +11,7 @@ func makePersonalLobby(player *playerData) *lobbyData {
 	lobbyList = append(lobbyList, newLobby)
 
 	lobbyAddr := lobbyList[len(lobbyList)-1]
-	player.InLobby = lobbyAddr
-	player.MyLobby = lobbyAddr
+	player.inLobby = lobbyAddr
+	player.myLobby = lobbyAddr
 	return lobbyAddr
 }

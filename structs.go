@@ -20,11 +20,11 @@ type lobbyData struct {
 type playerData struct {
 	ID         uint64
 	Name       string
-	LastActive time.Time
+	lastActive time.Time
 
-	InLobby   *lobbyData
-	MyLobby   *lobbyData
-	DeadFor   uint8
+	inLobby   *lobbyData
+	myLobby   *lobbyData
+	deadFor   uint8
 	Length    uint32
 	Tiles     []XY
 	Head      XY

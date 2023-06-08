@@ -1,55 +1,36 @@
 package main
 
-import "sync"
+import (
+	"math/rand"
+	"sync"
+)
+
+const testLobbys = 3
+const testPlayers = 7
 
 func init() {
 	lobbyLock.Lock()
 	defer lobbyLock.Unlock()
 
+	for x := 0; x < testLobbys; x++ {
+		newLobby := &lobbyData{ID: makeUID(), Name: genName()}
+		lobbyList = append(lobbyList, newLobby)
+	}
+
 	players = make(map[uint64]*playerData)
+
+	for x := 0; x < testPlayers; x++ {
+		id := makeUID()
+		players[id] = &playerData{Name: genName(), ID: id}
+	}
+
+	for p := range players {
+		players[p].inLobby = lobbyList[rand.Intn(testLobbys)]
+		players[p].inLobby.Players = append(players[p].inLobby.Players, players[p])
+	}
 }
 
-var testPlayerList = []*playerData{
-	{Name: "foxvenusnoodles"},
-	{Name: "cereseggleopard"},
-	{Name: "foxvealoldeuboi"},
-	{Name: "swanednamodedog"},
-	{Name: "pigvegashooting"},
-}
-
-var testPlayerListTwo = []*playerData{
-	{Name: "lamerburgermeisterwithbutter"},
-	{Name: "idiotsandwich"},
-	{Name: "inquisitiveidiot"},
-}
-
-var lobbyList = []*lobbyData{
-	{
-		ID:      0,
-		Name:    "Test Lobby",
-		Players: testPlayerList,
-	},
-	{
-		ID:      1,
-		Name:    "super long name n00b room with sprinkles and spam",
-		Players: testPlayerListTwo,
-	},
-	{
-		ID:      2,
-		Name:    "lobby lobby",
-		Players: nil,
-	},
-	{
-		ID:      3,
-		Name:    "something somthing lobby",
-		Players: testPlayerList,
-	},
-	{
-		ID:      4,
-		Name:    "hork bork",
-		Players: nil,
-	},
-}
+var lobbyList = []*lobbyData{}
 
 var players map[uint64]*playerData
 var lobbyLock sync.Mutex

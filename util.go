@@ -6,10 +6,19 @@ import (
 	"math/rand"
 	"sync"
 	"time"
+
+	"github.com/goombaio/namegenerator"
 )
+
+var nameGenerator namegenerator.Generator
+
+func init() {
+	nameGenerator = namegenerator.NewNameGenerator(rand.Int63())
+}
 
 /* Prune and write DB if dirty */
 func backgroundTasks() {
+
 	go func() {
 		for {
 			time.Sleep(time.Minute * 5)
@@ -19,27 +28,47 @@ func backgroundTasks() {
 	go func() {
 		for {
 			lobbyLock.Lock()
-			var delList []uint64
-			for p, player := range players {
-				if time.Since(player.LastActive) > MAX_IDLE {
-					delList = append(delList, p)
+			for _, player := range players {
+				if time.Since(player.lastActive) > MAX_IDLE {
+					killPlayer(player.ID)
 				}
 			}
-			for _, item := range delList {
-				cwlog.DoLog(true, "Deleting %v", item)
-				delete(players, item)
-			}
 			lobbyLock.Unlock()
-			time.Sleep(time.Second * 10)
+			time.Sleep(time.Millisecond * 10)
 		}
 	}()
 }
 
-var userIDLock sync.Mutex
+// Requires lobbyLock to be already be locked
+func killPlayer(id uint64) {
+	player := players[id]
+
+	//Remove from lobby
+	if player.inLobby != nil {
+		for p, player := range player.inLobby.Players {
+			if player.ID == id {
+				player.inLobby.Players = append(player.inLobby.Players[:p], player.inLobby.Players[p+1:]...)
+				return
+			}
+		}
+	}
+	//Remove from lobby
+	if player.myLobby != nil {
+		for p, player := range player.myLobby.Players {
+			if player.ID == id {
+				player.inLobby.Players = append(player.inLobby.Players[:p], player.inLobby.Players[p+1:]...)
+				return
+			}
+		}
+	}
+	delete(players, id)
+}
+
+var UIDLock sync.Mutex
 
 func makeUID() uint64 {
-	userIDLock.Lock()
-	defer userIDLock.Unlock()
+	UIDLock.Lock()
+	defer UIDLock.Unlock()
 	testID := rand.Uint64()
 
 	/* Keep regenerating until id is unique */
@@ -52,13 +81,11 @@ func makeUID() uint64 {
 }
 
 func findID(id uint64) bool {
-	for _, player := range players {
-		if player.ID == id {
-			return true
-		}
+	if players[id] == nil {
+		return false
+	} else {
+		return true
 	}
-
-	return false
 }
 
 func filterName(input string) string {
@@ -79,6 +106,14 @@ func genName() string {
 	genUsernameLock.Lock()
 	defer genUsernameLock.Unlock()
 
+	for x := 0; x < 10; x++ {
+		name := nameGenerator.Generate()
+		if playerNameUnique(name) {
+			return name
+		}
+	}
+
+	/* Fallback */
 	uniqueNameNum++
 	return fmt.Sprintf("Unnamed-%v", uniqueNameNum)
 }
@@ -93,5 +128,5 @@ func playerNameUnique(input string) bool {
 }
 
 func playerActivity(player *playerData) {
-	player.LastActive = time.Now().UTC()
+	player.lastActive = time.Now().UTC()
 }

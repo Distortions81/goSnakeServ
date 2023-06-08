@@ -15,7 +15,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 	/* Before ID check */
 	if input == "init" {
 		id := makeUID()
-		newPlayer := playerData{Name: genName(), ID: id, LastActive: time.Now().UTC()}
+		newPlayer := playerData{Name: genName(), ID: id, lastActive: time.Now().UTC()}
 		players[id] = &newPlayer
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 
@@ -57,14 +57,14 @@ func commandParser(input string, w http.ResponseWriter) bool {
 			cwlog.DoLog(true, "commandParser: Join: ParseUint: Error: %v", err)
 			return false
 		}
-		if player.InLobby != nil {
-			cwlog.DoLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.InLobby.ID)
+		if player.inLobby != nil {
+			cwlog.DoLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.inLobby.ID)
 			return false
 		}
 		for l, lobby := range lobbyList {
 			if lobby.ID == inputID {
 				lobby.Players = append(lobby.Players, player)
-				player.InLobby = lobbyList[l]
+				player.inLobby = lobbyList[l]
 				cwlog.DoLog(true, "Player: %v joined lobby: %v", player.ID, inputID)
 				playerActivity(player)
 				return writeTo(w, "joined", "%v", inputID)
