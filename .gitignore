@@ -2,3 +2,4 @@ fullchain.pem
 privkey.pem
 log/*.log
 goSnakeServ
+www/main.wasm.gz

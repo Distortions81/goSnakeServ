@@ -14,6 +14,8 @@ const (
 	port    = ":8080"
 )
 
+var fileServer http.Handler
+
 func main() {
 
 	cwlog.StartLog()
@@ -43,6 +45,9 @@ func main() {
 		return
 	}
 	cwlog.DoLog(true, "Loaded certs.")
+
+	/* Download server */
+	fileServer = http.FileServer(http.Dir("www"))
 
 	/* HTTPS server */
 	http.HandleFunc("/", httpsHandler)

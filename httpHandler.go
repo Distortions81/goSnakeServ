@@ -8,6 +8,15 @@ import (
 
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
+	if r.Method == http.MethodGet {
+		cwlog.DoLog(true, "File request: %v", r.RequestURI)
+		fileServer.ServeHTTP(w, r)
+		return
+	} else if r.Method != http.MethodPost {
+		/* Anything other than get or post, just silently reject it */
+		return
+	}
+
 	/* Read body */
 	bytes, err := io.ReadAll(r.Body)
 	if err != nil {
