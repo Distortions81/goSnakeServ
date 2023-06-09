@@ -15,7 +15,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 	/* Before ID check */
 	if input == "init" {
 		id := makeUID()
-		newPlayer := playerData{Name: genName(), ID: id, lastActive: time.Now().UTC()}
+		newPlayer := playerData{Name: genName(), ID: id, lastActive: time.Now()}
 		players[id] = &newPlayer
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 
@@ -48,6 +48,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 
 	if command == "ping" {
 		cwlog.DoLog(true, "Client: %v (PING)", player.ID)
+		playerActivity(player)
 		return writeByte(w, []byte("PONG"))
 	} else if command == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
@@ -89,6 +90,7 @@ func commandParser(input string, w http.ResponseWriter) bool {
 	} else if command == "createLobby" {
 		newLobby := makePersonalLobby(player)
 		if newLobby != nil {
+			playerActivity(player)
 			return writeTo(w, "createdLobby", "%v", newLobby.ID)
 		}
 		return false

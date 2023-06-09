@@ -129,5 +129,5 @@ func playerNameUnique(input string) bool {
 }
 
 func playerActivity(player *playerData) {
-	player.lastActive = time.Now().UTC()
+	player.lastActive = time.Now()
 }
