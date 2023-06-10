@@ -31,7 +31,5 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/* Send to command parser */
-	if !commandParser(input, w) {
-		return
-	}
+	commandParser(input, w)
 }

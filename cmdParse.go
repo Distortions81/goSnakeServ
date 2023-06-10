@@ -10,22 +10,27 @@ import (
 	"time"
 )
 
-func commandParser(input string, w http.ResponseWriter) bool {
+func commandParser(input string, w http.ResponseWriter) {
 
 	/* Before ID check */
 	if input == "init" {
 		id := makeUID()
 		newPlayer := playerData{Name: genName(), ID: id, lastActive: time.Now()}
-		players[id] = &newPlayer
+
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 
 		b, err := json.Marshal(newPlayer)
 		if err != nil {
 			cwlog.DoLog(true, "commandParser: init: err: %v", err)
-			return false
+			return
 		}
 
-		return writeByte(w, b)
+		playersLock.Lock()
+		players[id] = &newPlayer
+		writeByte(w, b)
+		playersLock.Unlock()
+
+		return
 	}
 
 	cmdPart := strings.Split(input, ":")

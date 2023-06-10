@@ -9,8 +9,10 @@ const testLobbys = 15
 const testPlayers = 150
 
 var lobbyList []*lobbyData
+var lobbyLock sync.RWMutex
+
 var players map[uint64]*playerData
-var lobbyLock sync.Mutex
+var playersLock sync.RWMutex
 
 func init() {
 	lobbyLock.Lock()
