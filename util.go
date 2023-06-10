@@ -7,13 +7,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/goombaio/namegenerator"
+	"github.com/Distortions81/namegenerator"
 )
 
-var nameGenerator namegenerator.Generator
+var gen namegenerator.Generator
 
 func init() {
-	nameGenerator = namegenerator.NewNameGenerator(rand.Int63())
+	gen = namegenerator.NewNameGenerator(rand.Int63())
 }
 
 /* Prune and write DB if dirty */
@@ -94,17 +94,21 @@ func filterName(input string) string {
 
 var genUsernameLock sync.Mutex
 var uniqueNameNum uint64
+var outOfNames bool
 
 func genName() string {
 	genUsernameLock.Lock()
 	defer genUsernameLock.Unlock()
 
-	for x := 0; x < 10; x++ {
-		name := nameGenerator.Generate()
-		if playerNameUnique(name) {
-			return name
+	if !outOfNames {
+		for x := 0; x < 10; x++ {
+			name := gen.Generate()
+			if playerNameUnique(name) {
+				return name
+			}
+			cwlog.DoLog(true, "Regenerating, name dupe: %v", name)
 		}
-		cwlog.DoLog(true, "Regenerating, name dupe: %v", name)
+		outOfNames = true
 	}
 
 	/* Fallback */

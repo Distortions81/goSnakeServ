@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/Distortions81/namegenerator"
 )
 
 /* Http timeout */
@@ -37,6 +39,8 @@ func main() {
 	}
 
 	writeDB(true)
+
+	cwlog.DoLog(true, "Max random names: %v\n", namegenerator.GetMaxNames())
 
 	backgroundTasks()
 

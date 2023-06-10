@@ -1,2 +1,6 @@
-github.com/goombaio/namegenerator v0.0.0-20181006234301-989e774b106e h1:XmA6L9IPRdUr28a+SK/oMchGgQy159wvzXA5tJ7l+40=
-github.com/goombaio/namegenerator v0.0.0-20181006234301-989e774b106e/go.mod h1:AFIo+02s+12CEg8Gzz9kzhCbmbq6JcKNrhHffCGA9z4=
+github.com/Distortions81/namegenerator v0.0.0-20230610205217-d2812bd50004 h1:DmgYWF9IybtutFe3uRIRVcy9uSDIXbNhS8Rua5tYvSI=
+github.com/Distortions81/namegenerator v0.0.0-20230610205217-d2812bd50004/go.mod h1:iWEfbboPULprn81oMFDmE62BfZiE7kD8EnxdDnm81Z8=
+github.com/Distortions81/namegenerator v0.0.0-20230610212338-cd55eb592293 h1:r15wnh3gsPrrRHojlySD5T+gJ5Y6OJ+uTe9OPcwyxNA=
+github.com/Distortions81/namegenerator v0.0.0-20230610212338-cd55eb592293/go.mod h1:iWEfbboPULprn81oMFDmE62BfZiE7kD8EnxdDnm81Z8=
+github.com/Distortions81/namegenerator v0.0.0-20230610222055-0bdbff0e7c5c h1:6u7xa2sT6M908XYPA1MxlqIc4IaEq2us8AztildXilw=
+github.com/Distortions81/namegenerator v0.0.0-20230610222055-0bdbff0e7c5c/go.mod h1:iWEfbboPULprn81oMFDmE62BfZiE7kD8EnxdDnm81Z8=
