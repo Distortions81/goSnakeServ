@@ -29,6 +29,8 @@ type playerData struct {
 	Tiles     []XY
 	Head      XY
 	Direction uint8
+
+	lock sync.Mutex
 }
 
 type XY struct {

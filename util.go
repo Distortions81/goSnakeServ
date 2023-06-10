@@ -21,27 +21,20 @@ func backgroundTasks() {
 
 	go func() {
 		for {
-			time.Sleep(time.Minute * 5)
-			writeDB(false)
-		}
-	}()
-	go func() {
-		for {
-			lobbyLock.Lock()
-			for _, player := range players {
+			pListLock.Lock()
+			for _, player := range pList {
 				if time.Since(player.lastActive) > MAX_IDLE {
 					killPlayer(player.ID)
 				}
 			}
-			lobbyLock.Unlock()
-			time.Sleep(time.Millisecond * 10)
+			pListLock.Unlock()
+			time.Sleep(time.Second * 5)
 		}
 	}()
 }
 
-// Requires lobbyLock to be already be locked
 func killPlayer(id uint64) {
-	player := players[id]
+	player := pList[id]
 
 	//Remove from lobby
 	if player.inLobby != nil {
@@ -52,7 +45,7 @@ func killPlayer(id uint64) {
 			}
 		}
 	}
-	//Remove from lobby
+	//Remove from personal lobby
 	if player.myLobby != nil {
 		for p, player := range player.myLobby.Players {
 			if player.ID == id {
@@ -61,7 +54,7 @@ func killPlayer(id uint64) {
 			}
 		}
 	}
-	delete(players, id)
+	delete(pList, id)
 }
 
 var UIDLock sync.Mutex
@@ -81,7 +74,7 @@ func makeUID() uint64 {
 }
 
 func findID(id uint64) bool {
-	if players[id] == nil {
+	if pList[id] == nil {
 		return false
 	} else {
 		return true
@@ -120,7 +113,7 @@ func genName() string {
 }
 
 func playerNameUnique(input string) bool {
-	for _, player := range players {
+	for _, player := range pList {
 		if player.Name == input {
 			return false
 		}

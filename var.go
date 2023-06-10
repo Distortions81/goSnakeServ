@@ -11,8 +11,8 @@ const testPlayers = 150
 var lobbyList []*lobbyData
 var lobbyLock sync.RWMutex
 
-var players map[uint64]*playerData
-var playersLock sync.RWMutex
+var pList map[uint64]*playerData
+var pListLock sync.RWMutex
 
 func init() {
 	lobbyLock.Lock()
@@ -23,15 +23,15 @@ func init() {
 		lobbyList = append(lobbyList, newLobby)
 	}
 
-	players = make(map[uint64]*playerData)
+	pList = make(map[uint64]*playerData)
 
 	for x := 0; x < testPlayers; x++ {
 		id := makeUID()
-		players[id] = &playerData{Name: genName(), ID: id}
+		pList[id] = &playerData{Name: genName(), ID: id}
 	}
 
-	for p := range players {
+	for p := range pList {
 		rVal := rand.Intn(testLobbys)
-		lobbyList[rVal].Players = append(lobbyList[rVal].Players, players[p])
+		lobbyList[rVal].Players = append(lobbyList[rVal].Players, pList[p])
 	}
 }
