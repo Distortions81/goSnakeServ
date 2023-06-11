@@ -33,6 +33,26 @@ func backgroundTasks() {
 	}()
 }
 
+func processLobbies() {
+	go func() {
+		for {
+			start := time.Now()
+
+			lobbyLock.Lock()
+			for l, _ := lobbies {
+
+			}
+			lobbyLock.Unlock()
+			remaining := time.Since(start) - (time.Millisecond * 100)
+			if remaining > 0 {
+				time.Sleep(remaining)
+			} else {
+				cwlog.DoLog(true,"Server unable to run simulation in realtime.")
+			}
+		}
+	}()
+}
+
 func killPlayer(id uint64) {
 	player := pList[id]
 
