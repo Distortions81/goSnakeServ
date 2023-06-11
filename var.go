@@ -19,7 +19,7 @@ func init() {
 	defer lobbyLock.Unlock()
 
 	for x := 0; x < testLobbys; x++ {
-		newLobby := &lobbyData{ID: makeUID(), Name: genName()}
+		newLobby := &lobbyData{ID: makeUID(), Name: genName(), boardSize: 32}
 		lobbyList = append(lobbyList, newLobby)
 	}
 
@@ -27,7 +27,7 @@ func init() {
 
 	for x := 0; x < testPlayers; x++ {
 		id := makeUID()
-		pList[id] = &playerData{Name: genName(), ID: id}
+		pList[id] = &playerData{Name: genName(), ID: id, Tiles: []XY{}}
 	}
 
 	for p := range pList {
