@@ -82,6 +82,9 @@ func commandParser(input string, w http.ResponseWriter) {
 		}
 		for l, lobby := range lobbyList {
 			if lobby.ID == inputID {
+				player.Length = 1
+				player.Tiles = []XY{{X: 1, Y: 1}}
+				player.Direction = DIR_SOUTH
 				lobby.Players = append(lobby.Players, player)
 				player.inLobby = lobbyList[l]
 				cwlog.DoLog(true, "Player: %v joined lobby: %v", player.ID, inputID)
