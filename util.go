@@ -39,15 +39,23 @@ func processLobbies() {
 			start := time.Now()
 
 			lobbyLock.Lock()
-			for l, _ := lobbies {
-
+			for l, _ := range lobbyList {
+				//do stuff
+				if l < 0 {
+					//
+				}
 			}
 			lobbyLock.Unlock()
-			remaining := time.Since(start) - (time.Millisecond * 100)
-			if remaining > 0 {
+
+			took := time.Since(start)
+			remaining := (time.Millisecond * 100) - took
+
+			if remaining > 0 { //Kill remaining time
 				time.Sleep(remaining)
-			} else {
-				cwlog.DoLog(true,"Server unable to run simulation in realtime.")
+				cwlog.DoLog(true, "Frame took %v, %v left.", took, remaining)
+
+			} else { //We are lagging behind realtime
+				cwlog.DoLog(true, "Unable to keep up: took: %v", took)
 			}
 		}
 	}()
