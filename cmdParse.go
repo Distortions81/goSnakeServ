@@ -52,6 +52,10 @@ func commandParser(input string, w http.ResponseWriter) {
 	if player == nil {
 		cwlog.DoLog(true, "Invalid userid: %v", useridstr)
 		return
+
+		//Game mode
+	} else if player.inLobby != nil {
+		//game handlers
 	}
 
 	if command == "ping" { /* Keep alive, and check latency */
