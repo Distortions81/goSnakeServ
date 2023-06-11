@@ -9,10 +9,11 @@ type lobbyData struct {
 	ID   uint64
 	Name string
 
-	Players []*playerData
-	Ticks   uint64
-	Level   uint16
-	tiles   map[XY]bool
+	Players   []*playerData
+	Ticks     uint64
+	Level     uint16
+	tiles     map[XY]bool
+	boardSize uint16
 
 	lock sync.Mutex
 }
