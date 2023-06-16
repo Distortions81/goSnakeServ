@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"sync"
 	"time"
 )
@@ -19,6 +20,7 @@ type lobbyData struct {
 }
 
 type playerData struct {
+	Desc       http.ResponseWriter
 	ID         uint64
 	Name       string
 	lastActive time.Time
