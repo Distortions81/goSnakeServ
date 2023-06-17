@@ -108,7 +108,8 @@ func commandParser(input string, w http.ResponseWriter) {
 		writeTo(w, "name", "%v", player.Name)
 		return
 	} else if command == "createLobby" {
-		newLobby := makePersonalLobby(player)
+		newName := filterName(data)
+		newLobby := makePersonalLobby(player, newName)
 		if newLobby != nil {
 			playerActivity(player)
 			writeTo(w, "createdLobby", "%v", newLobby.ID)
