@@ -16,7 +16,6 @@ func processLobbies() {
 	go func() {
 		for {
 			start := time.Now()
-			time.Sleep(time.Millisecond)
 			lobbyLock.Lock()
 			for l, _ := range lobbyList {
 
@@ -67,6 +66,8 @@ func processLobbies() {
 			}
 			wg.Wait()
 
+			lobbyLock.Unlock()
+
 			took := time.Since(start)
 			remaining := (time.Millisecond * 250) - took
 
@@ -78,7 +79,6 @@ func processLobbies() {
 				cwlog.DoLog(true, "Unable to keep up: took: %v", took)
 			}
 
-			lobbyLock.Unlock()
 		}
 	}()
 }
