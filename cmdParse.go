@@ -40,7 +40,7 @@ func commandParser(input string, w http.ResponseWriter) {
 		return
 	}
 
-	cwlog.DoLog(true, "%v: %v: '%v'", cmdPart[0], cmdPart[1], cmdPart[2])
+	//cwlog.DoLog(true, "%v: %v: '%v'", cmdPart[0], cmdPart[1], cmdPart[2])
 	useridstr, command, data := cmdPart[0], cmdPart[1], cmdPart[2]
 	userid, _ := strconv.ParseUint(useridstr, 10, 64)
 
@@ -52,13 +52,34 @@ func commandParser(input string, w http.ResponseWriter) {
 	if player == nil {
 		cwlog.DoLog(true, "Invalid userid: %v", useridstr)
 		return
-
-		//Game mode
-	} else if player.inLobby != nil {
-		//game handlers
 	}
 
-	if command == "ping" { /* Keep alive, and check latency */
+	if command == "go" {
+		val, err := strconv.ParseUint(data, 10, 8)
+		if err != nil {
+			cwlog.DoLog(true, "commandParser: go: ParseUint: Error: %v", err)
+			return
+		}
+		if player.inLobby == nil {
+			return
+		}
+		player.inLobby.lock.Lock()
+		player.Direction = uint8(val)
+		writeByte(w, player.inLobby.outBuf)
+		player.inLobby.lock.Unlock()
+
+	} else if command == "keyframe" {
+
+		player.inLobby.lock.Lock()
+		buf, err := json.Marshal(player.inLobby.Players)
+		player.inLobby.lock.Unlock()
+
+		if err != nil {
+			cwlog.DoLog(true, "commandParser: keyframe: Marshal: Error: %v", err)
+			return
+		}
+		writeByte(w, buf)
+	} else if command == "ping" { /* Keep alive, and check latency */
 		cwlog.DoLog(true, "Client: %v (PING)", player.ID)
 		playerActivity(player)
 		writeByte(w, []byte("PONG"))

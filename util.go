@@ -24,7 +24,7 @@ func backgroundTasks() {
 			pListLock.Lock()
 			for _, player := range pList {
 				if time.Since(player.lastActive) > MAX_IDLE {
-					killPlayer(player.ID)
+					//killPlayer(player.ID)
 				}
 			}
 			pListLock.Unlock()

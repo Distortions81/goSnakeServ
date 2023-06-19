@@ -5,21 +5,26 @@ import (
 	"sync"
 )
 
-const testLobbys = 15
-const testPlayers = 150
+const (
+	testLobbys       = 15
+	testPlayers      = 150
+	defaultBoardSize = 32
+)
 
-var lobbyList []*lobbyData
-var lobbyLock sync.RWMutex
+var (
+	lobbyList []*lobbyData
+	lobbyLock sync.RWMutex
 
-var pList map[uint64]*playerData
-var pListLock sync.RWMutex
+	pList     map[uint64]*playerData
+	pListLock sync.RWMutex
+)
 
 func init() {
 	lobbyLock.Lock()
 	defer lobbyLock.Unlock()
 
 	for x := 0; x < testLobbys; x++ {
-		newLobby := &lobbyData{ID: makeUID(), Name: genName(), boardSize: 32}
+		newLobby := &lobbyData{ID: makeUID(), Name: genName(), boardSize: defaultBoardSize}
 		lobbyList = append(lobbyList, newLobby)
 	}
 
@@ -27,7 +32,9 @@ func init() {
 
 	for x := 0; x < testPlayers; x++ {
 		id := makeUID()
-		pList[id] = &playerData{Name: genName(), ID: id, Tiles: []XY{}}
+		randx := uint16(rand.Intn(defaultBoardSize))
+		randy := uint16(rand.Intn(defaultBoardSize))
+		pList[id] = &playerData{Name: genName(), ID: id, Tiles: []XY{{X: randx, Y: randy}}, Length: 2}
 	}
 
 	for p := range pList {

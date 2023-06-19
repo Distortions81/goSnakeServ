@@ -16,6 +16,8 @@ type lobbyData struct {
 	tiles     map[XY]bool
 	boardSize uint16
 
+	outBuf []byte
+
 	lock sync.Mutex
 }
 
@@ -33,8 +35,7 @@ type playerData struct {
 	Tiles     []XY
 	Head      XY
 	Direction uint8
-
-	lock sync.Mutex
+	gameTick  uint64
 }
 
 type XY struct {
