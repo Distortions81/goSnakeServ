@@ -113,7 +113,7 @@ func aiMove(ai *playerData) {
 		newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 {
 
 		/* Try another direction */
-		for x := 0; x < 8; x++ {
+		for x := 0; x < 100; x++ {
 
 			/* Rotate */
 			dir = uint8(rand.Intn(4))
