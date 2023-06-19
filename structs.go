@@ -36,6 +36,7 @@ type playerData struct {
 	Head      XY
 	Direction uint8
 	gameTick  uint64
+	isBot     bool
 
 	lock sync.Mutex
 }

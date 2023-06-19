@@ -34,11 +34,12 @@ func init() {
 		id := makeUID()
 		randx := uint16(rand.Intn(defaultBoardSize))
 		randy := uint16(rand.Intn(defaultBoardSize))
-		pList[id] = &playerData{Name: genName(), ID: id, Tiles: []XY{{X: randx, Y: randy}}, Length: 1, Direction: DIR_SOUTH}
+		pList[id] = &playerData{Name: genName(), ID: id, Tiles: []XY{{X: randx, Y: randy}}, Length: 1, Direction: uint8(rand.Intn(DIR_WEST)), isBot: true}
 	}
 
 	for p := range pList {
 		rVal := rand.Intn(testLobbys)
 		lobbyList[rVal].Players = append(lobbyList[rVal].Players, pList[p])
+		pList[p].inLobby = lobbyList[rVal]
 	}
 }

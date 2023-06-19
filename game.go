@@ -2,6 +2,7 @@ package main
 
 import (
 	"goSnakeServ/cwlog"
+	"math/rand"
 	"runtime"
 	"time"
 
@@ -27,6 +28,11 @@ func processLobbies() {
 					defer lobby.lock.Unlock()
 
 					lobby.Ticks++
+
+					if lobby.Ticks%40 == 0 {
+						//Add apple
+					}
+
 					lobbyList[l].outBuf = nil
 					for p, player := range lobby.Players {
 						defer func() { lobbyList[l].outBuf = append(lobbyList[l].outBuf, byte(player.Direction)) }()
@@ -45,6 +51,11 @@ func processLobbies() {
 							player.DeadFor++
 							continue
 						}
+						/* Test basic AI */
+						if player.isBot {
+							aiMove(player)
+						}
+
 						head := player.Tiles[player.Length-1]
 						newHead := goDir(player.Direction, head)
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
@@ -81,4 +92,56 @@ func processLobbies() {
 
 		}
 	}()
+}
+
+func rotateCW(dir uint8) uint8 {
+	return uint8(PosIntMod(int(dir+1), DIR_WEST))
+}
+
+func rotateCCW(dir uint8) uint8 {
+	return uint8(PosIntMod(int(dir-1), DIR_WEST))
+}
+
+func aiMove(ai *playerData) {
+
+	dir := ai.Direction
+	head := ai.Tiles[ai.Length-1]
+	newHead := goDir(dir, head)
+
+	/* If we keep going, will we collide with edge? */
+	if newHead.X > ai.inLobby.boardSize || newHead.X < 1 ||
+		newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 {
+
+		/* Try another direction */
+		for x := 0; x < 8; x++ {
+
+			/* Rotate */
+			dir = uint8(rand.Intn(4))
+			/* New test */
+			newHead = goDir(dir, head)
+
+			/* Check if we are good */
+			if newHead.X > ai.inLobby.boardSize || newHead.X < 1 ||
+				newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 {
+
+				/* Nope, try again */
+				continue
+
+			} else {
+
+				/* Good, proceed */
+				ai.Direction = dir
+				break
+			}
+
+		}
+	}
+}
+
+func PosIntMod(d, m int) int {
+	var res int = d % m
+	if res < 0 && m > 0 {
+		return res + m
+	}
+	return res
 }
