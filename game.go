@@ -16,7 +16,7 @@ func processLobbies() {
 	go func() {
 		for {
 			start := time.Now()
-
+			time.Sleep(time.Millisecond)
 			lobbyLock.Lock()
 			for l, _ := range lobbyList {
 

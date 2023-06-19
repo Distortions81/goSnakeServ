@@ -15,7 +15,7 @@ func commandParser(input string, w http.ResponseWriter) {
 	/* Before ID check */
 	if input == "init" {
 		id := makeUID()
-		newPlayer := playerData{Name: genName(), ID: id, LastActive: time.Now()}
+		newPlayer := playerData{Name: genName(), ID: id, LastActive: time.Now(), Direction: DIR_SOUTH}
 
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 
