@@ -22,20 +22,22 @@ type lobbyData struct {
 }
 
 type playerData struct {
-	Desc       http.ResponseWriter
+	desc       http.ResponseWriter
 	ID         uint64
 	Name       string
-	lastActive time.Time
+	LastActive time.Time
 
 	inLobby *lobbyData
 	myLobby *lobbyData
 
-	deadFor   uint8
+	DeadFor   uint8
 	Length    uint32
 	Tiles     []XY
 	Head      XY
 	Direction uint8
 	gameTick  uint64
+
+	lock sync.Mutex
 }
 
 type XY struct {

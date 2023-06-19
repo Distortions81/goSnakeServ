@@ -36,21 +36,21 @@ func processLobbies() {
 						if player.Length < 1 {
 							continue
 						}
-						if player.deadFor > 0 {
-							if player.deadFor > 4 {
+						if player.DeadFor > 0 {
+							if player.DeadFor > 4 {
 								deletePlayer = p
 							}
-							if player.deadFor == 1 {
+							if player.DeadFor == 1 {
 								cwlog.DoLog(true, "Player %v died.", player.ID)
 							}
-							player.deadFor++
+							player.DeadFor++
 							continue
 						}
 						head := player.Tiles[player.Length-1]
 						newHead := goDir(player.Direction, head)
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
 							newHead.Y > lobby.boardSize || newHead.Y < 1 {
-							player.deadFor = 1
+							player.DeadFor = 1
 							cwlog.DoLog(true, "Player %v #%v died.\n", player.Name, player.ID)
 							continue
 						}
@@ -66,7 +66,6 @@ func processLobbies() {
 				}(l)
 			}
 			wg.Wait()
-			lobbyLock.Unlock()
 
 			took := time.Since(start)
 			remaining := (time.Millisecond * 250) - took
@@ -78,6 +77,8 @@ func processLobbies() {
 			} else { //We are lagging behind realtime
 				cwlog.DoLog(true, "Unable to keep up: took: %v", took)
 			}
+
+			lobbyLock.Unlock()
 		}
 	}()
 }

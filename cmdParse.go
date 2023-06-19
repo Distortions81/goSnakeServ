@@ -15,7 +15,7 @@ func commandParser(input string, w http.ResponseWriter) {
 	/* Before ID check */
 	if input == "init" {
 		id := makeUID()
-		newPlayer := playerData{Name: genName(), ID: id, lastActive: time.Now()}
+		newPlayer := playerData{Name: genName(), ID: id, LastActive: time.Now()}
 
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 
@@ -63,14 +63,18 @@ func commandParser(input string, w http.ResponseWriter) {
 		if player.inLobby == nil {
 			return
 		}
+		lobbyLock.Lock()
 		player.inLobby.lock.Lock()
 		player.Direction = uint8(val)
 		writeByte(w, player.inLobby.outBuf)
 		player.inLobby.lock.Unlock()
+		lobbyLock.Unlock()
 
 	} else if command == "keyframe" {
 
 		player.inLobby.lock.Lock()
+		dir, _ := strconv.ParseUint(data, 10, 8)
+		player.Direction = uint8(dir)
 		buf, err := json.Marshal(player.inLobby.Players)
 		player.inLobby.lock.Unlock()
 
@@ -78,7 +82,9 @@ func commandParser(input string, w http.ResponseWriter) {
 			cwlog.DoLog(true, "commandParser: keyframe: Marshal: Error: %v", err)
 			return
 		}
+		lobbyLock.Lock()
 		writeByte(w, buf)
+		lobbyLock.Unlock()
 	} else if command == "ping" { /* Keep alive, and check latency */
 		cwlog.DoLog(true, "Client: %v (PING)", player.ID)
 		playerActivity(player)

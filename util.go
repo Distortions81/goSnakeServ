@@ -23,7 +23,7 @@ func backgroundTasks() {
 		for {
 			pListLock.Lock()
 			for _, player := range pList {
-				if time.Since(player.lastActive) > MAX_IDLE {
+				if time.Since(player.LastActive) > MAX_IDLE {
 					//killPlayer(player.ID)
 				}
 			}
@@ -140,5 +140,5 @@ func playerNameUnique(input string) bool {
 }
 
 func playerActivity(player *playerData) {
-	player.lastActive = time.Now()
+	player.LastActive = time.Now()
 }
