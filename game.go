@@ -65,6 +65,12 @@ func processLobbies() {
 							continue
 						}
 
+						if didCollidePlayer(lobby, player) {
+							player.DeadFor = 1
+							cwlog.DoLog(true, "Player %v #%v died.\n", player.Name, player.ID)
+							continue
+						}
+
 						player.Tiles = append(player.Tiles[1:], XY{X: newHead.X, Y: newHead.Y})
 						player.Head = head
 					}
@@ -102,11 +108,39 @@ func rotateCCW(dir uint8) uint8 {
 	return uint8(PosIntMod(int(dir-1), DIR_WEST))
 }
 
-func aiMove(ai *playerData) {
+/* Quick and dirty, optimize later */
+func didCollidePlayer(lobby *lobbyData, playerA *playerData) bool {
+	for _, playerB := range lobby.Players {
+		//Skip self
+		if playerA.ID == playerB.ID {
+			continue
+		}
+		for _, tileA := range playerA.Tiles {
+			for _, tileB := range playerB.Tiles {
+				if tileA.X == tileB.X && tileA.Y == tileB.Y {
+					return true
+				}
+			}
+		}
+	}
 
+	return false
+}
+
+func aiMove(ai *playerData) {
 	dir := ai.Direction
 	head := ai.Tiles[ai.Length-1]
 	newHead := goDir(dir, head)
+
+	if ai.inLobby != nil {
+		for x := 0; x < 100; x++ {
+			dir = uint8(rand.Intn(4))
+			if !didCollidePlayer(ai.inLobby, ai) {
+				ai.Direction = dir
+				break
+			}
+		}
+	}
 
 	/* If we keep going, will we collide with edge? */
 	if newHead.X > ai.inLobby.boardSize || newHead.X < 1 ||
