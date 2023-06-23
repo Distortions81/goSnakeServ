@@ -2,6 +2,7 @@ package main
 
 import (
 	"goSnakeServ/cwlog"
+	"math/rand"
 	"runtime"
 	"time"
 
@@ -161,14 +162,13 @@ func aiMove(ai *playerData) {
 		willCollidePlayer(ai.inLobby, ai, dir) {
 
 		/* Try another direction */
-		for x := 0; x < 4; x++ {
+		for x := 0; x < 16; x++ {
 			if x == int(ai.Direction) {
 				continue
 			}
 
 			/* Rotate */
-			dir = uint8(x)
-			/* New test */
+			dir = uint8(rand.Intn(DIR_WEST + 1)) /* New test */
 			newHead = goDir(dir, head)
 
 			/* Check if we are good */

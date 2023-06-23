@@ -34,7 +34,7 @@ func init() {
 		id := makeUID()
 		randx := uint16(rand.Intn(defaultBoardSize))
 		randy := uint16(rand.Intn(defaultBoardSize))
-		pList[id] = &playerData{Name: genName(), ID: id, Tiles: []XY{{X: randx, Y: randy}}, Length: 1, Direction: uint8(rand.Intn(DIR_WEST)), isBot: true}
+		pList[id] = &playerData{Name: genName(), ID: id, Tiles: []XY{{X: randx, Y: randy}, {X: randx, Y: randy}, {X: randx, Y: randy}}, Length: 3, Direction: uint8(rand.Intn(DIR_WEST)), isBot: true}
 	}
 
 	for p := range pList {
