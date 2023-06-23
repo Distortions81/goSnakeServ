@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"goSnakeServ/cwlog"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -107,13 +108,29 @@ func commandParser(input string, w http.ResponseWriter) {
 			cwlog.DoLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.inLobby.ID)
 			return
 		}
+		length := 10
 		for l, lobby := range lobbyList {
 			if lobby.ID == inputID {
-				player.Length = 3
-				player.Tiles = []XY{{X: 1, Y: 1}, {X: 1, Y: 1}, {X: 1, Y: 1}}
 				player.Direction = DIR_SOUTH
 				lobby.Players = append(lobby.Players, player)
 				player.inLobby = lobbyList[l]
+
+				var randx, randy uint16
+				for x := 0; x < 10000; x++ {
+					randx = uint16(rand.Intn(defaultBoardSize))
+					randy = uint16(rand.Intn(defaultBoardSize))
+					if !didCollidePlayer(player.inLobby, player) {
+						break
+					}
+				}
+
+				tiles := []XY{}
+				for x := 0; x < length; x++ {
+					tiles = append(tiles, XY{X: randx, Y: randy})
+				}
+				player.Tiles = tiles
+				player.Length = uint32(length)
+
 				cwlog.DoLog(true, "Player: %v joined lobby: %v", player.ID, inputID)
 				playerActivity(player)
 				writeTo(w, "joined", "%v", inputID)
