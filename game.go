@@ -127,24 +127,34 @@ func didCollidePlayer(lobby *lobbyData, playerA *playerData) bool {
 	return false
 }
 
-func aiMove(ai *playerData) {
-	dir := ai.Direction
-	head := ai.Tiles[ai.Length-1]
+/* Quick and dirty, optimize later */
+func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
+	head := playerA.Tiles[playerA.Length-1]
 	newHead := goDir(dir, head)
 
-	if ai.inLobby != nil {
-		for x := 0; x < 100; x++ {
-			dir = uint8(rand.Intn(4))
-			if !didCollidePlayer(ai.inLobby, ai) {
-				ai.Direction = dir
-				break
+	for _, playerB := range lobby.Players {
+		//Skip self
+		if playerA.ID == playerB.ID {
+			continue
+		}
+		for _, tileA := range playerB.Tiles {
+			if tileA.X == newHead.X && tileA.Y == newHead.Y {
+				return true
 			}
 		}
 	}
 
+	return false
+}
+
+func aiMove(ai *playerData) {
+	dir := ai.Direction
+	head := ai.Tiles[ai.Length-1]
+	newHead := goDir(ai.Direction, head)
+
 	/* If we keep going, will we collide with edge? */
 	if newHead.X > ai.inLobby.boardSize || newHead.X < 1 ||
-		newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 {
+		newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 || willCollidePlayer(ai.inLobby, ai, ai.Direction) {
 
 		/* Try another direction */
 		for x := 0; x < 100; x++ {
@@ -156,7 +166,7 @@ func aiMove(ai *playerData) {
 
 			/* Check if we are good */
 			if newHead.X > ai.inLobby.boardSize || newHead.X < 1 ||
-				newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 {
+				newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 || willCollidePlayer(ai.inLobby, ai, dir) {
 
 				/* Nope, try again */
 				continue
