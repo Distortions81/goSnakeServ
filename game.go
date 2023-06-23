@@ -59,13 +59,7 @@ func processLobbies() {
 						head := player.Tiles[player.Length-1]
 						newHead := goDir(player.Direction, head)
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
-							newHead.Y > lobby.boardSize || newHead.Y < 1 {
-							player.DeadFor = 1
-							cwlog.DoLog(true, "Player %v #%v died.\n", player.Name, player.ID)
-							continue
-						}
-
-						if didCollidePlayer(lobby, player) {
+							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.Direction) {
 							player.DeadFor = 1
 							cwlog.DoLog(true, "Player %v #%v died.\n", player.Name, player.ID)
 							continue
@@ -129,12 +123,15 @@ func didCollidePlayer(lobby *lobbyData, playerA *playerData) bool {
 
 /* Quick and dirty, optimize later */
 func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
+	if playerA.DeadFor != 0 {
+		return false
+	}
+
 	head := playerA.Tiles[playerA.Length-1]
 	newHead := goDir(dir, head)
 
 	for _, playerB := range lobby.Players {
-		//Skip self
-		if playerA.ID == playerB.ID {
+		if playerB.DeadFor != 0 {
 			continue
 		}
 		for _, tileA := range playerB.Tiles {
@@ -162,7 +159,7 @@ func aiMove(ai *playerData) {
 		willCollidePlayer(ai.inLobby, ai, dir) {
 
 		/* Try another direction */
-		for x := 0; x < 16; x++ {
+		for x := 0; x < 256; x++ {
 			if x == int(ai.Direction) {
 				continue
 			}

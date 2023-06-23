@@ -30,11 +30,16 @@ func init() {
 
 	pList = make(map[uint64]*playerData)
 
+	length := 10
 	for x := 0; x < testPlayers; x++ {
 		id := makeUID()
 		randx := uint16(rand.Intn(defaultBoardSize))
 		randy := uint16(rand.Intn(defaultBoardSize))
-		pList[id] = &playerData{Name: genName(), ID: id, Tiles: []XY{{X: randx, Y: randy}, {X: randx, Y: randy}, {X: randx, Y: randy}}, Length: 3, Direction: uint8(rand.Intn(DIR_WEST)), isBot: true}
+		tiles := []XY{}
+		for x := 0; x < length; x++ {
+			tiles = append(tiles, XY{X: randx, Y: randy})
+		}
+		pList[id] = &playerData{Name: genName(), ID: id, Tiles: tiles, Length: uint32(length), Direction: uint8(rand.Intn(DIR_WEST)), isBot: true}
 	}
 
 	for p := range pList {
