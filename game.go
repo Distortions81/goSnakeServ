@@ -2,7 +2,6 @@ package main
 
 import (
 	"goSnakeServ/cwlog"
-	"math/rand"
 	"runtime"
 	"time"
 
@@ -148,25 +147,34 @@ func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
 }
 
 func aiMove(ai *playerData) {
+	if !ai.isBot || ai.inLobby == nil {
+		return
+	}
+
 	dir := ai.Direction
 	head := ai.Tiles[ai.Length-1]
-	newHead := goDir(ai.Direction, head)
+	newHead := goDir(dir, head)
 
-	/* If we keep going, will we collide with edge? */
+	/* If we keep going, will we collide with edge or another player? */
 	if newHead.X > ai.inLobby.boardSize || newHead.X < 1 ||
-		newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 || willCollidePlayer(ai.inLobby, ai, ai.Direction) {
+		newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 ||
+		willCollidePlayer(ai.inLobby, ai, dir) {
 
 		/* Try another direction */
-		for x := 0; x < 100; x++ {
+		for x := 0; x < 4; x++ {
+			if x == int(ai.Direction) {
+				continue
+			}
 
 			/* Rotate */
-			dir = uint8(rand.Intn(4))
+			dir = uint8(x)
 			/* New test */
 			newHead = goDir(dir, head)
 
 			/* Check if we are good */
 			if newHead.X > ai.inLobby.boardSize || newHead.X < 1 ||
-				newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 || willCollidePlayer(ai.inLobby, ai, dir) {
+				newHead.Y > ai.inLobby.boardSize || newHead.Y < 1 ||
+				willCollidePlayer(ai.inLobby, ai, dir) {
 
 				/* Nope, try again */
 				continue
