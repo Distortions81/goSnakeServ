@@ -115,7 +115,7 @@ func rotateCCW(dir uint8) uint8 {
 /* Quick and dirty, optimize later */
 func spawnApple(lobby *lobbyData) bool {
 
-	limit := int(lobby.boardSize*lobby.boardSize) * 10
+	limit := int(lobby.boardSize*lobby.boardSize) * 100
 
 	for c := 0; c < limit; c++ {
 		rx, ry := uint16(rand.Intn(int(lobby.boardSize))), uint16(rand.Intn(int(lobby.boardSize)))

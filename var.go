@@ -30,7 +30,7 @@ func init() {
 
 	pList = make(map[uint64]*playerData)
 
-	length := 10
+	length := 3
 	for x := 0; x < testPlayers; x++ {
 		id := makeUID()
 		pList[id] = &playerData{Name: genName(), ID: id, Length: uint32(length), Direction: uint8(rand.Intn(DIR_WEST)), isBot: true}

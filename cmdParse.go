@@ -16,7 +16,7 @@ func commandParser(input string, w http.ResponseWriter) {
 	/* Before ID check */
 	if input == "init" {
 		id := makeUID()
-		newPlayer := playerData{Name: genName(), ID: id, LastActive: time.Now(), Direction: DIR_SOUTH}
+		newPlayer := playerData{Name: genName(), ID: id, lastActive: time.Now(), Direction: DIR_SOUTH}
 
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 
@@ -108,7 +108,7 @@ func commandParser(input string, w http.ResponseWriter) {
 			cwlog.DoLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.inLobby.ID)
 			return
 		}
-		length := 10
+		length := 3
 		for l, lobby := range lobbyList {
 			if lobby.ID == inputID {
 				player.Direction = DIR_SOUTH

@@ -7,7 +7,7 @@ func makePersonalLobby(player *playerData, name string) *lobbyData {
 	lobbyLock.Lock()
 	defer lobbyLock.Unlock()
 
-	newLobby := &lobbyData{Name: player.Name + "'s game", ID: player.ID, Ticks: 0, tiles: make(map[XY]bool), Level: 1}
+	newLobby := &lobbyData{Name: player.Name + "'s game", ID: player.ID, Ticks: 0, Level: 1}
 	if name != "" {
 		newLobby.Name = name
 	}

@@ -1,22 +1,20 @@
 package main
 
 import (
-	"net/http"
 	"sync"
 	"time"
 )
 
 type lobbyData struct {
-	ID   uint64
-	Name string
+	ID   uint64 `json:"i,omitempty"`
+	Name string `json:"n,omitempty"`
 
-	ShowApple bool
-	Apple     XY
-
-	Players   []*playerData
-	Ticks     uint64
-	Level     uint16
-	tiles     map[XY]bool
+	Players   []*playerData `json:"p,omitempty"`
+	Ticks     uint64        `json:"t,omitempty"`
+	Level     uint16        `json:"l,omitempty"`
+	ShowApple bool          `json:"s,omitempty"`
+	Apple     XY            `json:"a,om
+	itempty"`
 	boardSize uint16
 
 	outBuf []byte
@@ -25,23 +23,20 @@ type lobbyData struct {
 }
 
 type playerData struct {
-	desc       http.ResponseWriter
-	ID         uint64
-	Name       string
-	LastActive time.Time
+	ID   uint64 `json:"i,omitempty"`
+	Name string `json:"n,omitempty"`
+
+	DeadFor   uint8  `json:"x,omitempty"`
+	Length    uint32 `json:"l,omitempty"`
+	Tiles     []XY   `json:"t,omitempty"`
+	Head      XY     `json:"h,omitempty"`
+	Direction uint8  `json:"d,omitempty"`
+
+	lastActive time.Time
 
 	inLobby *lobbyData
 	myLobby *lobbyData
-
-	DeadFor   uint8
-	Length    uint32
-	Tiles     []XY
-	Head      XY
-	Direction uint8
-	gameTick  uint64
-	isBot     bool
-
-	lock sync.Mutex
+	isBot   bool
 }
 
 type XY struct {
