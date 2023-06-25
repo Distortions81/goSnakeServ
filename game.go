@@ -181,7 +181,7 @@ func aiMove(ai *playerData) {
 	}
 
 	dir := ai.Direction
-	if rand.Intn(10) == 0 {
+	if rand.Intn(15) == 0 {
 		dir = uint8(rand.Intn(DIR_WEST + 1)) /* New test */
 		ai.Direction = dir
 	}
