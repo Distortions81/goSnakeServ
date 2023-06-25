@@ -67,7 +67,7 @@ func commandParser(input string, w http.ResponseWriter) {
 		lobbyLock.Lock()
 		player.inLobby.lock.Lock()
 		player.Direction = uint8(val)
-		writeByte(w, player.inLobby.outBuf)
+		//writeByte(w, player.inLobby.outBuf)
 		player.inLobby.lock.Unlock()
 		lobbyLock.Unlock()
 

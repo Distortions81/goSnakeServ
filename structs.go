@@ -13,11 +13,10 @@ type lobbyData struct {
 	Ticks     uint64        `json:"t,omitempty"`
 	Level     uint16        `json:"l,omitempty"`
 	ShowApple bool          `json:"s,omitempty"`
-	Apple     XY            `json:"a,om
-	itempty"`
+	Apple     XY            `json:"a,omitempty"`
 	boardSize uint16
 
-	outBuf []byte
+	//outBuf []byte
 
 	lock sync.Mutex
 }

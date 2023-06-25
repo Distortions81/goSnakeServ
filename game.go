@@ -22,7 +22,6 @@ func processLobbies() {
 
 				wg.Add()
 				go func(l int) {
-					var deletePlayer = -1
 					lobby := lobbyList[l]
 					lobby.lock.Lock()
 					defer lobby.lock.Unlock()
@@ -33,20 +32,17 @@ func processLobbies() {
 
 					lobby.Ticks++
 
-					lobbyList[l].outBuf = nil
-					for p, player := range lobby.Players {
-						defer func() { lobbyList[l].outBuf = append(lobbyList[l].outBuf, byte(player.Direction)) }()
-
+					//lobbyList[l].outBuf = nil
+					for _, player := range lobby.Players {
 						/* Ignore, dead or not init */
 						if player.Length < 1 {
 							continue
 						}
 						if player.DeadFor > 0 {
 							if player.DeadFor > 4 {
-								deletePlayer = p
-							}
-							if player.DeadFor == 1 {
-								//cwlog.DoLog(true, "Player %v died.", player.ID)
+								player.Tiles = []XY{{}}
+								player.Length = 0
+								continue
 							}
 							player.DeadFor++
 							continue
@@ -76,12 +72,7 @@ func processLobbies() {
 						}
 						player.Head = head
 					}
-					if deletePlayer > -1 {
-						//cwlog.DoLog(true, "Player %v #%v deleted.\n", lobby.Players[deletePlayer].Name, lobby.Players[deletePlayer].ID)
-						//lobby.Players = append(lobby.Players[:deletePlayer], lobby.Players[deletePlayer+1:]...)
-						lobby.Players[deletePlayer].Tiles = []XY{}
-						lobby.Players[deletePlayer].Length = 0
-					}
+
 					wg.Done()
 				}(l)
 			}
