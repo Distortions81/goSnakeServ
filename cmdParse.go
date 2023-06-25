@@ -84,7 +84,7 @@ func commandParser(input string, w http.ResponseWriter) {
 			return
 		}
 		lobbyLock.Lock()
-		writeByte(w, buf)
+		writeByte(w, CompressZip(buf))
 		lobbyLock.Unlock()
 	} else if command == "ping" { /* Keep alive, and check latency */
 		cwlog.DoLog(true, "Client: %v (PING)", player.ID)
@@ -95,7 +95,7 @@ func commandParser(input string, w http.ResponseWriter) {
 	} else if command == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
 		playerActivity(player)
-		writeByte(w, b)
+		writeByte(w, CompressZip(b))
 		return
 
 	} else if command == "join" { /* Join a lobby */

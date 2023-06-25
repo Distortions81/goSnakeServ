@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"compress/zlib"
 	"fmt"
 	"goSnakeServ/cwlog"
+	"io"
 	"math/rand"
 	"sync"
 	"time"
@@ -14,6 +17,29 @@ var gen namegenerator.Generator
 
 func init() {
 	gen = namegenerator.NewNameGenerator(rand.Int63())
+}
+
+/* Generic unzip []byte */
+func UncompressZip(data []byte) []byte {
+	b := bytes.NewReader(data)
+
+	z, _ := zlib.NewReader(b)
+	defer z.Close()
+
+	p, err := io.ReadAll(z)
+	if err != nil {
+		return nil
+	}
+	return p
+}
+
+/* Generic zip []byte */
+func CompressZip(data []byte) []byte {
+	var b bytes.Buffer
+	w, _ := zlib.NewWriterLevel(&b, zlib.BestCompression)
+	w.Write(data)
+	w.Close()
+	return b.Bytes()
 }
 
 /* Prune and write DB if dirty */
