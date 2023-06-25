@@ -114,15 +114,16 @@ func commandParser(input string, w http.ResponseWriter) {
 				player.Direction = DIR_SOUTH
 
 				/* Reuse dead slots */
-				var foundOld bool
+				var makeNew bool = true
 				for f, find := range lobby.Players {
 					if find.DeadFor > 4 {
 						lobby.Players[f] = player
-						foundOld = true
+						makeNew = false
 						cwlog.DoLog(true, "Reused old player slot.")
+						break
 					}
 				}
-				if !foundOld {
+				if makeNew {
 					lobby.Players = append(lobby.Players, player)
 				}
 				player.inLobby = lobbyList[l]
