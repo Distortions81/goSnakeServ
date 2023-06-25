@@ -10,6 +10,9 @@ type lobbyData struct {
 	ID   uint64
 	Name string
 
+	ShowApple bool
+	Apple     XY
+
 	Players   []*playerData
 	Ticks     uint64
 	Level     uint16

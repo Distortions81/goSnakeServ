@@ -76,7 +76,7 @@ func commandParser(input string, w http.ResponseWriter) {
 		player.inLobby.lock.Lock()
 		dir, _ := strconv.ParseUint(data, 10, 8)
 		player.Direction = uint8(dir)
-		buf, err := json.Marshal(player.inLobby.Players)
+		buf, err := json.Marshal(player.inLobby)
 		player.inLobby.lock.Unlock()
 
 		if err != nil {

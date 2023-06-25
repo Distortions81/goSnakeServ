@@ -27,14 +27,17 @@ func processLobbies() {
 					lobby.lock.Lock()
 					defer lobby.lock.Unlock()
 
-					lobby.Ticks++
-
 					if lobby.Ticks%40 == 0 {
-						//Add apple
+						if !lobby.ShowApple {
+							spawnApple(lobby)
+						}
 					}
+
+					lobby.Ticks++
 
 					lobbyList[l].outBuf = nil
 					for p, player := range lobby.Players {
+
 						defer func() { lobbyList[l].outBuf = append(lobbyList[l].outBuf, byte(player.Direction)) }()
 
 						/* Ignore, dead or not init */
@@ -100,6 +103,27 @@ func rotateCW(dir uint8) uint8 {
 
 func rotateCCW(dir uint8) uint8 {
 	return uint8(PosIntMod(int(dir-1), DIR_WEST))
+}
+
+/* Quick and dirty, optimize later */
+func spawnApple(lobby *lobbyData) bool {
+
+	limit := int(lobby.boardSize*lobby.boardSize) * 10
+
+	for c := 0; c < limit; c++ {
+		rx, ry := uint16(rand.Intn(int(lobby.boardSize))), uint16(rand.Intn(int(lobby.boardSize)))
+		for _, player := range lobby.Players {
+			for _, tile := range player.Tiles {
+				if tile.X != rx && tile.Y != ry {
+					lobby.ShowApple = true
+					lobby.Apple = XY{X: rx, Y: ry}
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }
 
 /* Quick and dirty, optimize later */
