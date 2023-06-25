@@ -46,7 +46,7 @@ func processLobbies() {
 								deletePlayer = p
 							}
 							if player.DeadFor == 1 {
-								cwlog.DoLog(true, "Player %v died.", player.ID)
+								//cwlog.DoLog(true, "Player %v died.", player.ID)
 							}
 							player.DeadFor++
 							continue
@@ -62,7 +62,7 @@ func processLobbies() {
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
 							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.Direction) {
 							player.DeadFor = 1
-							cwlog.DoLog(true, "Player %v #%v died.\n", player.Name, player.ID)
+							//cwlog.DoLog(true, "Player %v #%v died.\n", player.Name, player.ID)
 							continue
 						}
 
@@ -77,8 +77,10 @@ func processLobbies() {
 						player.Head = head
 					}
 					if deletePlayer > -1 {
-						cwlog.DoLog(true, "Player %v #%v deleted.\n", lobby.Players[deletePlayer].Name, lobby.Players[deletePlayer].ID)
-						lobby.Players = append(lobby.Players[:deletePlayer], lobby.Players[deletePlayer+1:]...)
+						//cwlog.DoLog(true, "Player %v #%v deleted.\n", lobby.Players[deletePlayer].Name, lobby.Players[deletePlayer].ID)
+						//lobby.Players = append(lobby.Players[:deletePlayer], lobby.Players[deletePlayer+1:]...)
+						lobby.Players[deletePlayer].Tiles = []XY{}
+						lobby.Players[deletePlayer].Length = 0
 					}
 					wg.Done()
 				}(l)
