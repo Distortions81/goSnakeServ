@@ -27,17 +27,14 @@ func processLobbies() {
 					lobby.lock.Lock()
 					defer lobby.lock.Unlock()
 
-					if lobby.Ticks%40 == 0 {
-						if !lobby.ShowApple {
-							spawnApple(lobby)
-						}
+					if !lobby.ShowApple {
+						spawnApple(lobby)
 					}
 
 					lobby.Ticks++
 
 					lobbyList[l].outBuf = nil
 					for p, player := range lobby.Players {
-
 						defer func() { lobbyList[l].outBuf = append(lobbyList[l].outBuf, byte(player.Direction)) }()
 
 						/* Ignore, dead or not init */
@@ -54,6 +51,7 @@ func processLobbies() {
 							player.DeadFor++
 							continue
 						}
+
 						/* Test basic AI */
 						if player.isBot {
 							aiMove(player)
@@ -68,7 +66,14 @@ func processLobbies() {
 							continue
 						}
 
-						player.Tiles = append(player.Tiles[1:], XY{X: newHead.X, Y: newHead.Y})
+						if lobby.ShowApple && didCollideApple(player) {
+							lobby.ShowApple = false
+							player.Tiles = append(player.Tiles, XY{X: newHead.X, Y: newHead.Y})
+							player.Length++
+							cwlog.DoLog(true, "Player %v ate an apple.", player.Name)
+						} else {
+							player.Tiles = append(player.Tiles[1:], XY{X: newHead.X, Y: newHead.Y})
+						}
 						player.Head = head
 					}
 					if deletePlayer > -1 {
@@ -123,6 +128,19 @@ func spawnApple(lobby *lobbyData) bool {
 		}
 	}
 
+	return false
+}
+
+func didCollideApple(player *playerData) bool {
+	if player.inLobby == nil {
+		return false
+	}
+	for _, tile := range player.Tiles {
+		if tile.X == player.inLobby.Apple.X &&
+			tile.Y == player.inLobby.Apple.Y {
+			return true
+		}
+	}
 	return false
 }
 
