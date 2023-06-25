@@ -109,7 +109,7 @@ func spawnApple(lobby *lobbyData) bool {
 	limit := int(lobby.boardSize*lobby.boardSize) * 100
 
 	for c := 0; c < limit; c++ {
-		rx, ry := uint16(rand.Intn(int(lobby.boardSize-1))), uint16(rand.Intn(int(lobby.boardSize-1)))
+		rx, ry := uint16(rand.Intn(int(lobby.boardSize-1)))+1, uint16(rand.Intn(int(lobby.boardSize-1))+1)
 		for _, player := range lobby.Players {
 			for _, tile := range player.Tiles {
 				if tile.X != rx && tile.Y != ry {
