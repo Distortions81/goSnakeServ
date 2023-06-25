@@ -36,7 +36,7 @@ func UncompressZip(data []byte) []byte {
 /* Generic zip []byte */
 func CompressZip(data []byte) []byte {
 	var b bytes.Buffer
-	w, _ := zlib.NewWriterLevel(&b, zlib.BestCompression)
+	w, _ := zlib.NewWriterLevel(&b, zlib.BestSpeed)
 	w.Write(data)
 	w.Close()
 	return b.Bytes()
