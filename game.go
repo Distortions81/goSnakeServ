@@ -31,6 +31,7 @@ func processLobbies() {
 					}
 
 					lobby.Ticks++
+					playersAlive := 0
 
 					//lobbyList[l].outBuf = nil
 					for _, player := range lobby.Players {
@@ -47,6 +48,7 @@ func processLobbies() {
 							player.DeadFor++
 							continue
 						}
+						playersAlive++
 
 						/* Test basic AI */
 						if player.isBot {
@@ -71,6 +73,32 @@ func processLobbies() {
 							player.Tiles = append(player.Tiles[1:], XY{X: newHead.X, Y: newHead.Y})
 						}
 						player.Head = head
+					}
+					maxRespawn := 5
+					/* Respawn players in dead lobbies */
+					if playersAlive == 0 {
+						for _, testP := range lobby.Players {
+							if testP.Length == 0 && maxRespawn > 0 {
+								testP.Length = 3
+								testP.DeadFor = 0
+
+								maxRespawn--
+
+								var randx, randy uint16
+								for x := 0; x < 10000; x++ {
+									randx = uint16(rand.Intn(defaultBoardSize))
+									randy = uint16(rand.Intn(defaultBoardSize))
+									if !didCollidePlayer(testP.inLobby, testP) {
+										break
+									}
+								}
+
+								tiles := []XY{}
+								for x := 0; x < int(testP.Length); x++ {
+									tiles = append(tiles, XY{X: randx, Y: randy})
+								}
+							}
+						}
 					}
 
 					wg.Done()

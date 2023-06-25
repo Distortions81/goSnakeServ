@@ -23,13 +23,21 @@ func init() {
 	lobbyLock.Lock()
 	defer lobbyLock.Unlock()
 
+	makeTestLobbies()
+
+	pList = make(map[uint64]*playerData)
+
+	makeAIs()
+}
+
+func makeTestLobbies() {
 	for x := 0; x < testLobbys; x++ {
 		newLobby := &lobbyData{ID: makeUID(), Name: genName(), boardSize: defaultBoardSize}
 		lobbyList = append(lobbyList, newLobby)
 	}
+}
 
-	pList = make(map[uint64]*playerData)
-
+func makeAIs() {
 	length := 3
 	for x := 0; x < testPlayers; x++ {
 		id := makeUID()
@@ -56,5 +64,4 @@ func init() {
 		}
 		pList[p].Tiles = tiles
 	}
-
 }
