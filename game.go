@@ -140,10 +140,6 @@ func didCollideApple(player *playerData) bool {
 /* Quick and dirty, optimize later */
 func didCollidePlayer(lobby *lobbyData, playerA *playerData) bool {
 	for _, playerB := range lobby.Players {
-		//Skip self
-		if playerA.ID == playerB.ID {
-			continue
-		}
 		for _, tileA := range playerA.Tiles {
 			for _, tileB := range playerB.Tiles {
 				if tileA.X == tileB.X && tileA.Y == tileB.Y {
@@ -185,6 +181,11 @@ func aiMove(ai *playerData) {
 	}
 
 	dir := ai.Direction
+	if rand.Intn(10) == 0 {
+		dir = uint8(rand.Intn(DIR_WEST + 1)) /* New test */
+		ai.Direction = dir
+	}
+
 	head := ai.Tiles[ai.Length-1]
 	newHead := goDir(dir, head)
 

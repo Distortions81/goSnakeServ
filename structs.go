@@ -6,14 +6,14 @@ import (
 )
 
 type lobbyData struct {
-	ID   uint64 `json:"i,omitempty"`
-	Name string `json:"n,omitempty"`
+	ID   uint64 `json:"i"`
+	Name string `json:"n"`
 
-	Players   []*playerData `json:"p,omitempty"`
-	Ticks     uint64        `json:"t,omitempty"`
-	Level     uint16        `json:"l,omitempty"`
-	ShowApple bool          `json:"s,omitempty"`
-	Apple     XY            `json:"a,omitempty"`
+	Players   []*playerData `json:"p"`
+	Ticks     uint64        `json:"t"`
+	Level     uint16        `json:"l"`
+	ShowApple bool          `json:"s"`
+	Apple     XY            `json:"a"`
 	boardSize uint16
 
 	//outBuf []byte
@@ -22,14 +22,14 @@ type lobbyData struct {
 }
 
 type playerData struct {
-	ID   uint64 `json:"i,omitempty"`
-	Name string `json:"n,omitempty"`
+	ID   uint64 `json:"i"`
+	Name string `json:"n"`
 
-	DeadFor   uint8  `json:"x,omitempty"`
-	Length    uint32 `json:"l,omitempty"`
-	Tiles     []XY   `json:"t,omitempty"`
-	Head      XY     `json:"h,omitempty"`
-	Direction uint8  `json:"d,omitempty"`
+	DeadFor   uint8  `json:"x"`
+	Length    uint32 `json:"l"`
+	Tiles     []XY   `json:"t"`
+	Head      XY     `json:"h"`
+	Direction uint8  `json:"d"`
 
 	lastActive time.Time
 

@@ -112,7 +112,19 @@ func commandParser(input string, w http.ResponseWriter) {
 		for l, lobby := range lobbyList {
 			if lobby.ID == inputID {
 				player.Direction = DIR_SOUTH
-				lobby.Players = append(lobby.Players, player)
+
+				/* Reuse dead slots */
+				var foundOld bool
+				for f, find := range lobby.Players {
+					if find.DeadFor > 4 {
+						lobby.Players[f] = player
+						foundOld = true
+						cwlog.DoLog(true, "Reused old player slot.")
+					}
+				}
+				if !foundOld {
+					lobby.Players = append(lobby.Players, player)
+				}
 				player.inLobby = lobbyList[l]
 
 				var randx, randy uint16
