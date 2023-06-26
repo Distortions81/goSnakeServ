@@ -50,6 +50,11 @@ func processLobbies() {
 						}
 						playersAlive++
 
+						ptype := "Player"
+						if player.isBot {
+							ptype = "Bot"
+						}
+
 						/* Test basic AI */
 						if player.isBot {
 							aiMove(player)
@@ -60,7 +65,9 @@ func processLobbies() {
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
 							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.Direction) {
 							player.DeadFor = 1
-							//cwlog.DoLog(true, "Player %v #%v died.\n", player.Name, player.ID)
+							if !player.isBot {
+								cwlog.DoLog(true, "%v %v #%v died at %v,%v in lobby %v.\n", ptype, player.Name, player.ID, player.Head.X, player.Head.Y, player.inLobby.Name)
+							}
 							continue
 						}
 
@@ -68,19 +75,23 @@ func processLobbies() {
 							lobby.ShowApple = false
 							player.Tiles = append(player.Tiles, XY{X: newHead.X, Y: newHead.Y})
 							player.Length++
-							cwlog.DoLog(true, "Player %v ate an apple.", player.Name)
+							if !player.isBot {
+								cwlog.DoLog(true, "%v %v ate an apple at %v,%v in lobby %v.", ptype, player.Name, player.Head.X, player.Head.Y, player.inLobby.Name)
+							}
 						} else {
 							player.Tiles = append(player.Tiles[1:], XY{X: newHead.X, Y: newHead.Y})
 						}
 						player.Head = head
 					}
-					maxRespawn := 5
+					maxRespawn := 10
 					/* Respawn players in dead lobbies */
-					if playersAlive == 0 {
+					if playersAlive < 5 {
+						cwlog.DoLog(true, "Reviving AIs in lobby: %v", lobby.Name)
 						for _, testP := range lobby.Players {
-							if testP.Length == 0 && maxRespawn > 0 {
+							if testP.isBot && testP.Length == 0 && maxRespawn > 0 {
 								testP.Length = 3
 								testP.DeadFor = 0
+								testP.isBot = true
 
 								maxRespawn--
 
@@ -94,9 +105,10 @@ func processLobbies() {
 								}
 
 								tiles := []XY{}
-								for x := 0; x < int(testP.Length); x++ {
+								for x := 0; x < int(testP.Length-1); x++ {
 									tiles = append(tiles, XY{X: randx, Y: randy})
 								}
+								testP.Tiles = tiles
 							}
 						}
 					}
@@ -204,7 +216,7 @@ func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
 }
 
 func aiMove(ai *playerData) {
-	if !ai.isBot || ai.inLobby == nil {
+	if !ai.isBot || ai.inLobby == nil || ai.Length < 1 {
 		return
 	}
 
