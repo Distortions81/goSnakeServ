@@ -105,7 +105,7 @@ func processLobbies() {
 								}
 
 								tiles := []XY{}
-								for x := 0; x < int(testP.Length-1); x++ {
+								for x := 0; x < int(testP.Length); x++ {
 									tiles = append(tiles, XY{X: randx, Y: randy})
 								}
 								testP.Tiles = tiles
