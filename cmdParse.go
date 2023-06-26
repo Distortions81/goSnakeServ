@@ -144,7 +144,7 @@ func commandParser(input string, w http.ResponseWriter) {
 				player.Tiles = tiles
 				player.Length = uint32(length)
 
-				cwlog.DoLog(true, "Player: %v joined lobby: %v", player.ID, inputID)
+				cwlog.DoLog(true, "Player: %v joined lobby: %v at %v,%v", player.ID, inputID, randx, randy)
 				playerActivity(player)
 				writeTo(w, "joined", "%v", inputID)
 				return
