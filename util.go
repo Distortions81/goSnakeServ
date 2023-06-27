@@ -182,3 +182,23 @@ func playerNameUnique(input string) bool {
 func playerActivity(player *playerData) {
 	player.lastActive = time.Now()
 }
+
+func autoStartDir(player *playerData) uint8 {
+	if player != nil && player.inLobby != nil {
+		hbsize := player.inLobby.boardSize / 2
+
+		if player.Head.Y < (hbsize) {
+			player.Direction = DIR_NORTH
+		} else {
+			player.Direction = DIR_SOUTH
+		}
+
+		if player.Head.X < (hbsize) {
+			player.Direction = DIR_EAST
+		} else {
+			player.Direction = DIR_WEST
+		}
+
+	}
+	return DIR_SOUTH
+}
