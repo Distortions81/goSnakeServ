@@ -4,27 +4,37 @@ import (
 	"goSnakeServ/cwlog"
 	"math/rand"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/remeh/sizedwaitgroup"
 )
 
 var wg sizedwaitgroup.SizedWaitGroup
+var netLock sync.Mutex
+
+const FrameSpeed = 249
+const NetTime = FrameSpeed / 10
+const FrameTime = FrameSpeed - NetTime
 
 func processLobbies() {
 	wg = sizedwaitgroup.New(runtime.NumCPU())
 
 	go func() {
 		for {
-			start := time.Now()
+			loopStart := time.Now()
+			time.Sleep(time.Millisecond)
+
 			lobbyLock.Lock()
+			netLock.Lock()
 			for l, _ := range lobbyList {
 
 				wg.Add()
 				go func(l int) {
+					lobbyList[l].lock.Lock()
+					defer lobbyList[l].lock.Unlock()
+
 					lobby := lobbyList[l]
-					lobby.lock.Lock()
-					defer lobby.lock.Unlock()
 
 					if !lobby.ShowApple {
 						spawnApple(lobby)
@@ -112,7 +122,6 @@ func processLobbies() {
 							}
 						}
 					}
-
 					wg.Done()
 				}(l)
 			}
@@ -120,8 +129,8 @@ func processLobbies() {
 
 			lobbyLock.Unlock()
 
-			took := time.Since(start)
-			remaining := (time.Millisecond * 250) - took
+			took := time.Since(loopStart)
+			remaining := (time.Millisecond * FrameTime) - took
 
 			if remaining > 0 { //Kill remaining time
 				time.Sleep(remaining)
@@ -131,6 +140,8 @@ func processLobbies() {
 				cwlog.DoLog(true, "Unable to keep up: took: %v", took)
 			}
 
+			netLock.Unlock()
+			time.Sleep(time.Millisecond * NetTime)
 		}
 	}()
 }

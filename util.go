@@ -87,30 +87,6 @@ func goDir(dir uint8, pos XY) XY {
 	return pos
 }
 
-func killPlayer(id uint64) {
-	player := pList[id]
-
-	//Remove from lobby
-	if player.inLobby != nil {
-		for p, player := range player.inLobby.Players {
-			if player.ID == id {
-				player.inLobby.Players = append(player.inLobby.Players[:p], player.inLobby.Players[p+1:]...)
-				return
-			}
-		}
-	}
-	//Remove from personal lobby
-	if player.myLobby != nil {
-		for p, player := range player.myLobby.Players {
-			if player.ID == id {
-				player.inLobby.Players = append(player.inLobby.Players[:p], player.inLobby.Players[p+1:]...)
-				return
-			}
-		}
-	}
-	delete(pList, id)
-}
-
 var UIDLock sync.Mutex
 
 func makeUID() uint64 {
