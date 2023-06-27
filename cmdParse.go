@@ -78,11 +78,14 @@ func commandParser(input string, w http.ResponseWriter) {
 	} else if command == "keyframe" {
 
 		player.inLobby.lock.Lock()
+
+		/* Prevent reversing into self */
 		d, _ := strconv.ParseUint(data, 10, 8)
 		dir := uint8(d)
 		if reverseDir(dir) != player.Direction {
 			player.Direction = dir
 		}
+
 		buf, err := json.Marshal(player.inLobby)
 		player.inLobby.lock.Unlock()
 
