@@ -13,9 +13,6 @@ import (
 
 func commandParser(input string, w http.ResponseWriter) {
 
-	netLock.Lock()
-	defer netLock.Unlock()
-
 	/* Before ID check */
 	if input == "init" {
 		id := makeUID()
@@ -79,6 +76,9 @@ func commandParser(input string, w http.ResponseWriter) {
 		lobbyLock.Unlock()
 
 	} else if command == "keyframe" {
+		netLock.Lock()
+		netLock.Unlock()
+
 		player.inLobby.lock.Lock()
 		/* Prevent reversing into self */
 		d, _ := strconv.ParseUint(data, 10, 8)
@@ -87,13 +87,9 @@ func commandParser(input string, w http.ResponseWriter) {
 			player.Direction = dir
 		}
 
-		buf, err := json.Marshal(player.inLobby)
+		buf, _ := json.Marshal(player.inLobby)
 		player.inLobby.lock.Unlock()
 
-		if err != nil {
-			cwlog.DoLog(true, "commandParser: keyframe: Marshal: Error: %v", err)
-			return
-		}
 		writeByte(w, CompressZip(buf))
 
 	} else if command == "ping" { /* Keep alive, and check latency */

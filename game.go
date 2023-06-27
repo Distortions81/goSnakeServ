@@ -13,8 +13,8 @@ import (
 var wg sizedwaitgroup.SizedWaitGroup
 var netLock sync.Mutex
 
-const FrameSpeed = 249
-const NetTime = FrameSpeed / 10
+const FrameSpeed = 250
+const NetTime = 1
 const FrameTime = FrameSpeed - NetTime
 
 func processLobbies() {
