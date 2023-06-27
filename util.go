@@ -19,6 +19,20 @@ func init() {
 	gen = namegenerator.NewNameGenerator(rand.Int63())
 }
 
+func reverseDir(dir uint8) uint8 {
+	switch dir {
+	case DIR_NORTH:
+		return DIR_SOUTH
+	case DIR_EAST:
+		return DIR_WEST
+	case DIR_SOUTH:
+		return DIR_NORTH
+	case DIR_WEST:
+		return DIR_EAST
+	}
+	return dir
+}
+
 /* Generic unzip []byte */
 func UncompressZip(data []byte) []byte {
 	b := bytes.NewReader(data)

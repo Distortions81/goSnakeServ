@@ -66,16 +66,23 @@ func commandParser(input string, w http.ResponseWriter) {
 		}
 		lobbyLock.Lock()
 		player.inLobby.lock.Lock()
-		player.Direction = uint8(val)
-		//writeByte(w, player.inLobby.outBuf)
+
+		dir := uint8(val)
+		if reverseDir(dir) != player.Direction {
+			player.Direction = dir
+		}
+
 		player.inLobby.lock.Unlock()
 		lobbyLock.Unlock()
 
 	} else if command == "keyframe" {
 
 		player.inLobby.lock.Lock()
-		dir, _ := strconv.ParseUint(data, 10, 8)
-		player.Direction = uint8(dir)
+		d, _ := strconv.ParseUint(data, 10, 8)
+		dir := uint8(d)
+		if reverseDir(dir) != player.Direction {
+			player.Direction = dir
+		}
 		buf, err := json.Marshal(player.inLobby)
 		player.inLobby.lock.Unlock()
 
