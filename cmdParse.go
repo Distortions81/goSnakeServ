@@ -90,7 +90,7 @@ func commandParser(input string, w http.ResponseWriter) {
 		buf, _ := json.Marshal(player.inLobby)
 		player.inLobby.lock.Unlock()
 
-		writeByte(w, CompressZip(buf))
+		writeByte(w, (buf))
 
 	} else if command == "ping" { /* Keep alive, and check latency */
 		cwlog.DoLog(true, "Client: %v (PING)", player.ID)

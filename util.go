@@ -56,23 +56,6 @@ func CompressZip(data []byte) []byte {
 	return b.Bytes()
 }
 
-/* Prune and write DB if dirty */
-func backgroundTasks() {
-
-	go func() {
-		for {
-			pListLock.Lock()
-			for _, player := range pList {
-				if time.Since(player.lastActive) > MAX_IDLE {
-					//killPlayer(player.ID)
-				}
-			}
-			pListLock.Unlock()
-			time.Sleep(time.Second * 5)
-		}
-	}()
-}
-
 func goDir(dir uint8, pos XY) XY {
 	switch dir {
 	case DIR_NORTH:

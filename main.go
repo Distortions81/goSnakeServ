@@ -42,7 +42,6 @@ func main() {
 
 	cwlog.DoLog(true, "Max random names: %v\n", namegenerator.GetMaxNames())
 
-	backgroundTasks()
 	processLobbies()
 
 	/* Load certificates */

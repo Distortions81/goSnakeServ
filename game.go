@@ -23,11 +23,10 @@ func processLobbies() {
 	go func() {
 		for {
 			loopStart := time.Now()
-			time.Sleep(time.Millisecond)
 
 			lobbyLock.Lock()
 			netLock.Lock()
-			for l, _ := range lobbyList {
+			for l := range lobbyList {
 
 				wg.Add()
 				go func(l int) {
