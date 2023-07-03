@@ -52,20 +52,12 @@ func makeUID() uint64 {
 	testID := rand.Uint64()
 
 	/* Keep regenerating until id is unique */
-	for findID(testID) {
+	for pList[testID] != nil {
 		testID = rand.Uint64()
 		cwlog.DoLog(true, "makeUID: Duplicate UID: %v, regenerating.", testID)
 	}
 
 	return testID
-}
-
-func findID(id uint64) bool {
-	if pList[id] == nil {
-		return false
-	} else {
-		return true
-	}
 }
 
 func filterName(input string) string {
