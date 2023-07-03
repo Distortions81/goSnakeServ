@@ -2,9 +2,13 @@ package main
 
 import (
 	"goSnakeServ/cwlog"
-	"io"
+	"log"
 	"net/http"
+
+	"github.com/gorilla/websocket"
 )
+
+var upgrader = websocket.Upgrader{}
 
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -17,19 +21,18 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/* Read body */
-	bytes, err := io.ReadAll(r.Body)
+	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		cwlog.DoLog(true, "Error reading request body: %v", err)
+		log.Print("upgrade:", err)
 		return
 	}
-	input := string(bytes)
-
-	/* Empty body, silently reject */
-	if input == "" {
-		return
+	defer c.Close()
+	for {
+		mt, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+		commandParser(message, mt)
 	}
-
-	/* Send to command parser */
-	commandParser(input, w)
 }
