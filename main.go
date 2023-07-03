@@ -56,7 +56,8 @@ func main() {
 	fileServer = http.FileServer(http.Dir("www"))
 
 	/* HTTPS server */
-	http.HandleFunc("/", httpsHandler)
+	http.HandleFunc("/gs", gsHandler)
+	http.HandleFunc("/", siteHandler)
 
 	/* Create TLS configuration */
 	config := &tls.Config{

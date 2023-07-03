@@ -9,18 +9,8 @@ import (
 )
 
 var upgrader = websocket.Upgrader{}
-var connections []*websocket.Conn
 
-func httpsHandler(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == http.MethodGet {
-		cwlog.DoLog(true, "File request: %v", r.RequestURI)
-		fileServer.ServeHTTP(w, r)
-		return
-	} else if r.Method != http.MethodPost {
-		/* Anything other than get or post, just silently reject it */
-		return
-	}
+func gsHandler(w http.ResponseWriter, r *http.Request) {
 
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -28,6 +18,10 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	go handleConnection(c)
+}
+
+func siteHandler(w http.ResponseWriter, r *http.Request) {
+	fileServer.ServeHTTP(w, r)
 }
 
 func handleConnection(conn *websocket.Conn) {
