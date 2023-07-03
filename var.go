@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	testLobbys       = 10
-	testPlayers      = testLobbys * 15
+	testlobbies      = 10
+	testPlayers      = testlobbies * 15
 	defaultBoardSize = 32
 )
 
@@ -31,7 +31,7 @@ func init() {
 }
 
 func makeTestLobbies() {
-	for x := 0; x < testLobbys; x++ {
+	for x := 0; x < testlobbies; x++ {
 		newLobby := &lobbyData{ID: makeUID(), Name: genName(), boardSize: defaultBoardSize}
 		lobbyList = append(lobbyList, newLobby)
 	}
@@ -45,7 +45,7 @@ func makeAIs() {
 	}
 
 	for p := range pList {
-		rVal := rand.Intn(testLobbys)
+		rVal := rand.Intn(testlobbies)
 		lobbyList[rVal].Players = append(lobbyList[rVal].Players, pList[p])
 		pList[p].inLobby = lobbyList[rVal]
 
