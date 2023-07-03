@@ -145,14 +145,6 @@ func processLobbies() {
 	}()
 }
 
-func rotateCW(dir uint8) uint8 {
-	return uint8(PosIntMod(int(dir+1), DIR_WEST))
-}
-
-func rotateCCW(dir uint8) uint8 {
-	return uint8(PosIntMod(int(dir-1), DIR_WEST))
-}
-
 /* Quick and dirty, optimize later */
 func spawnApple(lobby *lobbyData) bool {
 
