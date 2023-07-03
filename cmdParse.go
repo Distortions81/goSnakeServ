@@ -77,9 +77,6 @@ func commandParser(input string, c *websocket.Conn) {
 		lobbyLock.Unlock()
 
 	} else if command == "keyframe" {
-		netLock.Lock()
-		netLock.Unlock()
-
 		player.inLobby.lock.Lock()
 		/* Prevent reversing into self */
 		d, _ := strconv.ParseUint(data, 10, 8)
