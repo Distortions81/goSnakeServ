@@ -18,3 +18,13 @@ func makePersonalLobby(player *playerData, name string) *lobbyData {
 	player.myLobby = lobbyAddr
 	return lobbyAddr
 }
+
+func makeLobby(name string) *lobbyData {
+	lobbyLock.Lock()
+	defer lobbyLock.Unlock()
+
+	newLobby := &lobbyData{ID: makeUID(), Name: genName(), boardSize: defaultBoardSize}
+	lobbyList = append(lobbyList, newLobby)
+
+	return newLobby
+}
