@@ -190,6 +190,7 @@ func writeByte(c *websocket.Conn, input []byte) bool {
 	err := c.WriteMessage(websocket.BinaryMessage, input)
 	if err != nil {
 		cwlog.DoLog(true, "Error writing response: %v", err)
+		c.Close()
 		return false
 	}
 	return true
@@ -199,9 +200,10 @@ func writeByteTo(c *websocket.Conn, command string, input []byte) bool {
 	buf := []byte(command + ":")
 	buf = append(buf[:], input[:]...)
 
-	err := c.WriteMessage(websocket.BinaryMessage, input)
+	err := c.WriteMessage(websocket.BinaryMessage, buf)
 	if err != nil {
 		cwlog.DoLog(true, "Error writing response: %v", err)
+		c.Close()
 		return false
 	}
 
