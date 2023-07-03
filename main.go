@@ -62,7 +62,7 @@ func main() {
 	/* Create TLS configuration */
 	config := &tls.Config{
 		Certificates:       []tls.Certificate{cert},
-		InsecureSkipVerify: false,
+		InsecureSkipVerify: true,
 	}
 
 	/* Create HTTPS server */
