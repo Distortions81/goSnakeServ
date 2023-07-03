@@ -4,13 +4,10 @@ import (
 	"goSnakeServ/cwlog"
 	"math/rand"
 	"runtime"
-	"sync"
 	"time"
 
 	"github.com/remeh/sizedwaitgroup"
 )
-
-var netLock sync.Mutex
 
 const FrameSpeed = 250
 
@@ -22,7 +19,6 @@ func processLobbies() {
 			loopStart := time.Now()
 
 			lobbyLock.Lock()
-			netLock.Lock()
 			for l := range lobbyList {
 
 				wg.Add()
@@ -124,7 +120,6 @@ func processLobbies() {
 			wg.Wait()
 
 			lobbyLock.Unlock()
-			netLock.Unlock()
 
 			took := time.Since(loopStart)
 			remaining := (time.Millisecond * FrameSpeed) - took
