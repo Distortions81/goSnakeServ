@@ -9,6 +9,7 @@ import (
 )
 
 var upgrader = websocket.Upgrader{}
+var connections []*websocket.Conn
 
 func httpsHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -26,13 +27,17 @@ func httpsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
-	defer c.Close()
+	go handleConnection(c)
+}
+
+func handleConnection(conn *websocket.Conn) {
 	for {
-		mt, message, err := c.ReadMessage()
+		_, data, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("read:", err)
+			cwlog.DoLog(true, "Error on connection read: %v", err)
+			conn.Close()
 			break
 		}
-		commandParser(message, mt)
+		commandParser(string(data), conn)
 	}
 }

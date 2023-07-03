@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"goSnakeServ/cwlog"
 	"math/rand"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
-func commandParser(input string, w http.ResponseWriter) {
+func commandParser(input string, c *websocket.Conn) {
 
 	/* Before ID check */
 	if input == "init" {
@@ -28,7 +29,7 @@ func commandParser(input string, w http.ResponseWriter) {
 
 		pListLock.Lock()
 		pList[id] = &newPlayer
-		writeByte(w, b)
+		writeByte(c, b)
 		pListLock.Unlock()
 
 		return
@@ -90,18 +91,18 @@ func commandParser(input string, w http.ResponseWriter) {
 		buf, _ := json.Marshal(player.inLobby)
 		player.inLobby.lock.Unlock()
 
-		writeByte(w, (buf))
+		writeByte(c, (buf))
 
 	} else if command == "ping" { /* Keep alive, and check latency */
 		cwlog.DoLog(true, "Client: %v (PING)", player.ID)
 		playerActivity(player)
-		writeByte(w, []byte("PONG"))
+		writeByte(c, []byte("PONG"))
 		return
 
 	} else if command == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
 		playerActivity(player)
-		writeByte(w, CompressZip(b))
+		writeByte(c, CompressZip(b))
 		return
 
 	} else if command == "join" { /* Join a lobby */
@@ -152,7 +153,7 @@ func commandParser(input string, w http.ResponseWriter) {
 
 				cwlog.DoLog(true, "Player: %v joined lobby: %v at %v,%v", player.ID, inputID, randx, randy)
 				playerActivity(player)
-				writeTo(w, "joined", "%v", inputID)
+				writeTo(c, "joined", "%v", inputID)
 				return
 			}
 		}
@@ -168,14 +169,14 @@ func commandParser(input string, w http.ResponseWriter) {
 		} else {
 			cwlog.DoLog(true, "Player (%v) tried to rename to a non-unique name: '%v'", player.ID, newName)
 		}
-		writeTo(w, "name", "%v", player.Name)
+		writeTo(c, "name", "%v", player.Name)
 		return
 	} else if command == "createLobby" {
 		newName := filterName(data)
 		newLobby := makePersonalLobby(player, newName)
 		if newLobby != nil {
 			playerActivity(player)
-			writeTo(w, "createdLobby", "%v", newLobby.ID)
+			writeTo(c, "createdLobby", "%v", newLobby.ID)
 			return
 		}
 		return
@@ -185,8 +186,8 @@ func commandParser(input string, w http.ResponseWriter) {
 	}
 }
 
-func writeByte(w http.ResponseWriter, input []byte) bool {
-	_, err := w.Write(input)
+func writeByte(c *websocket.Conn, input []byte) bool {
+	err := c.WriteMessage(websocket.BinaryMessage, input)
 	if err != nil {
 		cwlog.DoLog(true, "Error writing response: %v", err)
 		return false
@@ -194,11 +195,11 @@ func writeByte(w http.ResponseWriter, input []byte) bool {
 	return true
 }
 
-func writeByteTo(w http.ResponseWriter, command string, input []byte) bool {
+func writeByteTo(c *websocket.Conn, command string, input []byte) bool {
 	buf := []byte(command + ":")
 	buf = append(buf[:], input[:]...)
 
-	_, err := w.Write(buf)
+	err := c.WriteMessage(websocket.BinaryMessage, input)
 	if err != nil {
 		cwlog.DoLog(true, "Error writing response: %v", err)
 		return false
@@ -208,11 +209,11 @@ func writeByteTo(w http.ResponseWriter, command string, input []byte) bool {
 	return true
 }
 
-func writeStringTo(w http.ResponseWriter, command string, input string) bool {
-	return writeByteTo(w, command, []byte(input))
+func writeStringTo(c *websocket.Conn, command string, input string) bool {
+	return writeByteTo(c, command, []byte(input))
 }
 
-func writeTo(w http.ResponseWriter, command string, inputFormat string, args ...interface{}) bool {
+func writeTo(c *websocket.Conn, command string, inputFormat string, args ...interface{}) bool {
 	input := fmt.Sprintf(inputFormat, args...)
-	return writeStringTo(w, command, input)
+	return writeStringTo(c, command, input)
 }
