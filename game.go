@@ -13,8 +13,6 @@ import (
 var netLock sync.Mutex
 
 const FrameSpeed = 250
-const NetTime = 1
-const FrameTime = FrameSpeed - NetTime
 
 func processLobbies() {
 	go func() {
@@ -128,7 +126,7 @@ func processLobbies() {
 			lobbyLock.Unlock()
 
 			took := time.Since(loopStart)
-			remaining := (time.Millisecond * FrameTime) - took
+			remaining := (time.Millisecond * FrameSpeed) - took
 
 			if remaining > 0 { //Kill remaining time
 				time.Sleep(remaining)
@@ -138,8 +136,9 @@ func processLobbies() {
 				cwlog.DoLog(true, "Unable to keep up: took: %v", took)
 			}
 
+			/* Allow network to grab lock */
 			netLock.Unlock()
-			time.Sleep(time.Millisecond * NetTime)
+			time.Sleep(time.Millisecond)
 		}
 	}()
 }
