@@ -10,7 +10,6 @@ import (
 	"github.com/remeh/sizedwaitgroup"
 )
 
-var wg sizedwaitgroup.SizedWaitGroup
 var netLock sync.Mutex
 
 const FrameSpeed = 250
@@ -18,9 +17,9 @@ const NetTime = 1
 const FrameTime = FrameSpeed - NetTime
 
 func processLobbies() {
-	wg = sizedwaitgroup.New(runtime.NumCPU())
-
 	go func() {
+		wg := sizedwaitgroup.New(runtime.NumCPU())
+
 		for {
 			loopStart := time.Now()
 
