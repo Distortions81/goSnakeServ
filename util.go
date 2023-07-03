@@ -1,11 +1,8 @@
 package main
 
 import (
-	"bytes"
-	"compress/zlib"
 	"fmt"
 	"goSnakeServ/cwlog"
-	"io"
 	"math/rand"
 	"sync"
 	"time"
@@ -31,29 +28,6 @@ func reverseDir(dir uint8) uint8 {
 		return DIR_EAST
 	}
 	return dir
-}
-
-/* Generic unzip []byte */
-func UncompressZip(data []byte) []byte {
-	b := bytes.NewReader(data)
-
-	z, _ := zlib.NewReader(b)
-	defer z.Close()
-
-	p, err := io.ReadAll(z)
-	if err != nil {
-		return nil
-	}
-	return p
-}
-
-/* Generic zip []byte */
-func CompressZip(data []byte) []byte {
-	var b bytes.Buffer
-	w, _ := zlib.NewWriterLevel(&b, zlib.BestSpeed)
-	w.Write(data)
-	w.Close()
-	return b.Bytes()
 }
 
 func goDir(dir uint8, pos XY) XY {

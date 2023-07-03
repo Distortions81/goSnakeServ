@@ -102,7 +102,7 @@ func commandParser(input string, c *websocket.Conn) {
 	} else if command == "list" { /* List lobbies */
 		b, _ := json.Marshal(lobbyList)
 		playerActivity(player)
-		writeByte(c, CompressZip(b))
+		writeByte(c, b)
 		return
 
 	} else if command == "join" { /* Join a lobby */
