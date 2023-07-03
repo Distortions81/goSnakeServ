@@ -124,21 +124,18 @@ func processLobbies() {
 			wg.Wait()
 
 			lobbyLock.Unlock()
+			netLock.Unlock()
 
 			took := time.Since(loopStart)
 			remaining := (time.Millisecond * FrameSpeed) - took
 
 			if remaining > 0 { //Kill remaining time
 				time.Sleep(remaining)
-				//cwlog.DoLog(true, "Frame took %v, %v left.", took, remaining)
 
 			} else { //We are lagging behind realtime
+				time.Sleep(time.Millisecond)
 				cwlog.DoLog(true, "Unable to keep up: took: %v", took)
 			}
-
-			/* Allow network to grab lock */
-			netLock.Unlock()
-			time.Sleep(time.Millisecond)
 		}
 	}()
 }
