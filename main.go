@@ -25,7 +25,7 @@ func main() {
 	if !*devMode {
 		upgrader.CheckOrigin = func(r *http.Request) bool {
 			origin := r.Header.Get("Origin")
-			return origin == "https://facility38.xyz:8080/"
+			return origin == "https://facility38.xyz:8080"
 		}
 	}
 
