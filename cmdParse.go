@@ -21,7 +21,7 @@ func commandParser(input string, c *websocket.Conn) {
 
 		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 
-		b, err := json.Marshal(newPlayer)
+		_, err := json.Marshal(newPlayer)
 		if err != nil {
 			cwlog.DoLog(true, "commandParser: init: err: %v", err)
 			return
@@ -29,7 +29,7 @@ func commandParser(input string, c *websocket.Conn) {
 
 		pListLock.Lock()
 		pList[id] = &newPlayer
-		writeByte(c, b)
+		//writeByte(c, b)
 		pListLock.Unlock()
 
 		return
@@ -85,21 +85,21 @@ func commandParser(input string, c *websocket.Conn) {
 			player.Direction = dir
 		}
 
-		buf, _ := json.Marshal(player.inLobby)
+		json.Marshal(player.inLobby)
 		player.inLobby.lock.Unlock()
 
-		writeByte(c, (buf))
+		//writeByte(c, (buf))
 
 	} else if command == "ping" { /* Keep alive, and check latency */
 		cwlog.DoLog(true, "Client: %v (PING)", player.ID)
 		playerActivity(player)
-		writeByte(c, []byte("PONG"))
+		//writeByte(c, []byte("PONG"))
 		return
 
 	} else if command == "list" { /* List lobbies */
-		b, _ := json.Marshal(lobbyList)
+		json.Marshal(lobbyList)
 		playerActivity(player)
-		writeByte(c, b)
+		//writeByte(c, b)
 		return
 
 	} else if command == "join" { /* Join a lobby */
@@ -183,11 +183,21 @@ func commandParser(input string, c *websocket.Conn) {
 	}
 }
 
-func writeByte(c *websocket.Conn, input []byte) bool {
-	err := c.WriteMessage(websocket.BinaryMessage, input)
+func writeByte(player *playerData, header byte, input []byte) bool {
+
+	if player.conn == nil {
+		return false
+	}
+
+	var err error
+	if input == nil {
+		err = player.conn.WriteMessage(websocket.BinaryMessage, []byte{header})
+	} else {
+		err = player.conn.WriteMessage(websocket.BinaryMessage, append([]byte{header}, input...))
+	}
 	if err != nil {
 		cwlog.DoLog(true, "Error writing response: %v", err)
-		c.Close()
+		player.conn.Close()
 		return false
 	}
 	return true

@@ -25,7 +25,7 @@ func siteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleConnection(conn *websocket.Conn) {
-	player := &playerData{ID: makeUID()}
+	player := &playerData{conn: conn}
 	for {
 		_, data, err := conn.ReadMessage()
 		if err != nil {

@@ -3,6 +3,8 @@ package main
 import (
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 type lobbyData struct {
@@ -22,6 +24,8 @@ type lobbyData struct {
 }
 
 type playerData struct {
+	conn *websocket.Conn
+
 	ID   uint64 `json:"i"`
 	Name string `json:"n"`
 
