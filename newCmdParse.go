@@ -140,6 +140,9 @@ func writeToPlayer(player *playerData, header byte, input []byte) bool {
 		return false
 	}
 
+	player.connLock.Lock()
+	defer player.connLock.Unlock()
+
 	var err error
 	if input == nil {
 		err = player.conn.WriteMessage(websocket.BinaryMessage, []byte{header})

@@ -18,13 +18,12 @@ type lobbyData struct {
 	Apple     XY            `json:"a"`
 	boardSize uint16
 
-	netBuf []byte
-
 	lock sync.Mutex
 }
 
 type playerData struct {
-	conn *websocket.Conn
+	conn     *websocket.Conn
+	connLock sync.Mutex
 
 	ID   uint64 `json:"i"`
 	Name string `json:"n"`
