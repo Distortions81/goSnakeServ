@@ -20,10 +20,8 @@ func newParser(input []byte, player *playerData) {
 	data := input[1:]
 
 	cmdName := cmdNames[d]
-	if cmdName == "" {
-		doLog(true, "Received: 0x%02X, %v\n", d, string(data))
-	} else {
-		doLog(true, "Received: %v, %v\n", cmdName, string(data))
+	if cmdName != "" {
+		doLog(true, "Received: %v\n", cmdName)
 	}
 	switch d {
 	case CMD_INIT: //INIT

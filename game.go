@@ -12,13 +12,16 @@ import (
 const FrameSpeed = 250
 
 func processLobbies() {
+	var numBytes int
+	var gameTicks int
+
 	go func() {
 		wg := sizedwaitgroup.New(runtime.NumCPU())
 
 		for {
 			loopStart := time.Now()
+			gameTicks++
 
-			var numBytes int
 			var numPlayers int
 
 			lobbyLock.Lock()
@@ -139,8 +142,9 @@ func processLobbies() {
 
 			lobbyLock.Unlock()
 
-			if numBytes > 0 && numPlayers > 0 {
-				doLog(true, "Wrote %v bytes for %v players.", numBytes, numPlayers)
+			if gameTicks%240 == 0 && numBytes > 0 && numPlayers > 0 {
+				doLog(true, "Wrote %0.2fkb/sec for %v players.", float32(numBytes)/1024.0/240.0, numPlayers)
+				numBytes = 0
 			}
 
 			took := time.Since(loopStart)
