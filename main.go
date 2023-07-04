@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"flag"
 	"net/http"
 	"runtime/debug"
 	"time"
@@ -18,6 +19,15 @@ const (
 var fileServer http.Handler
 
 func main() {
+
+	devMode := flag.Bool("dev", false, "dev mode enable")
+	flag.Parse()
+	if !*devMode {
+		upgrader.CheckOrigin = func(r *http.Request) bool {
+			origin := r.Header.Get("Origin")
+			return origin == "https://facility38.xyz:8080/"
+		}
+	}
 
 	startLog()
 	logDaemon()

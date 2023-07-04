@@ -11,7 +11,7 @@ var upgrader = websocket.Upgrader{EnableCompression: true}
 
 func gsHandler(w http.ResponseWriter, r *http.Request) {
 
-	c, err := upgrader.Upgrade(w, r, nil)
+	c, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
 		log.Print("upgrade:", err)
 		return
