@@ -183,21 +183,12 @@ func commandParser(input string, c *websocket.Conn) {
 	}
 }
 
-func writeByte(player *playerData, header byte, input []byte) bool {
+func writeByte(c *websocket.Conn, header byte, input []byte) bool {
 
-	if player.conn == nil {
-		return false
-	}
-
-	var err error
-	if input == nil {
-		err = player.conn.WriteMessage(websocket.BinaryMessage, []byte{header})
-	} else {
-		err = player.conn.WriteMessage(websocket.BinaryMessage, append([]byte{header}, input...))
-	}
+	err := c.WriteMessage(websocket.BinaryMessage, append([]byte{header}, input...))
 	if err != nil {
 		cwlog.DoLog(true, "Error writing response: %v", err)
-		player.conn.Close()
+		c.Close()
 		return false
 	}
 	return true
