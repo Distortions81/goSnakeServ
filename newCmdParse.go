@@ -26,7 +26,7 @@ func newParser(input []byte, player *playerData) {
 	}
 	switch d {
 	case CMD_INIT: //INIT
-		if !checkSecret(data) {
+		if !checkSecret(nil, data) {
 			player.conn.Close()
 			return
 		}
@@ -47,9 +47,9 @@ func newParser(input []byte, player *playerData) {
 
 		writeToPlayer(player, byte(RECV_LOCALPLAYER), b)
 	case CMD_PINGPONG: //PING
-		if checkSecret(data) {
+		if checkSecret(player, data) {
 			//cwlog.DoLog(true, "PING")
-			writeToPlayer(player, byte(CMD_PINGPONG), generateSecret())
+			writeToPlayer(player, byte(CMD_PINGPONG), generateSecret(player))
 		} else {
 			cwlog.DoLog(true, "malformed PING")
 			player.conn.Close()
