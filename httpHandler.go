@@ -25,6 +25,7 @@ func siteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleConnection(conn *websocket.Conn) {
+	player := &playerData{ID: makeUID()}
 	for {
 		_, data, err := conn.ReadMessage()
 		if err != nil {
@@ -32,6 +33,6 @@ func handleConnection(conn *websocket.Conn) {
 			conn.Close()
 			break
 		}
-		commandParser(string(data), conn)
+		newParser(data, player)
 	}
 }
