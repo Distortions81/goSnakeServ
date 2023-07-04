@@ -125,7 +125,7 @@ func newParser(input []byte, player *playerData) {
 	case CMD_SPAWN:
 		//spawn
 	case CMD_GODIR:
-		//go dir
+		player.Direction = uint8(data[0])
 
 	default:
 		doLog(true, "Received invalid: 0x%02X, %v\n", d, string(data))
