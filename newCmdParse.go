@@ -20,11 +20,10 @@ func newParser(input []byte, player *playerData) {
 
 	cmdName := cmdNames[d]
 	if cmdName == "" {
-		cwlog.DoLog(true, "Header: 0x%02X\n", d)
+		cwlog.DoLog(true, "Received: 0x%02X, %v\n", d, string(data))
 	} else {
-		cwlog.DoLog(true, "Header: %v\n", cmdName)
+		cwlog.DoLog(true, "Received: %v, %v\n", cmdName, string(data))
 	}
-
 	switch d {
 	case CMD_INIT: //INIT
 		if !checkSecret(data) {
@@ -48,7 +47,14 @@ func newParser(input []byte, player *playerData) {
 
 		writeToPlayer(player, byte(RECV_LOCALPLAYER), b)
 	case CMD_PINGPONG: //PING
-		writeToPlayer(player, byte(CMD_PINGPONG), nil)
+		if checkSecret(data) {
+			//cwlog.DoLog(true, "PING")
+			writeToPlayer(player, byte(CMD_PINGPONG), generateSecret())
+		} else {
+			cwlog.DoLog(true, "malformed PING")
+			player.conn.Close()
+			return
+		}
 	case CMD_LOGIN:
 		//Login
 	case CMD_NAME:
@@ -73,7 +79,9 @@ func newParser(input []byte, player *playerData) {
 		//go dir
 
 	default:
-		cwlog.DoLog(true, "Invalid header: 0x%02X", d)
+		cwlog.DoLog(true, "Received invalid: 0x%02X, %v\n", d, string(data))
+		player.conn.Close()
+		return
 	}
 }
 

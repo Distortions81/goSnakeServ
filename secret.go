@@ -58,6 +58,11 @@ func checkSecret(input []byte) bool {
 		panic(err)
 	}
 
+	inputLen := len(decodedTimestamp)
+	if inputLen < 12 {
+		return false
+	}
+
 	// Retrieve the nonce and encrypted timestamp
 	nonceSize := 12 // GCM nonce size
 	nonce := decodedTimestamp[:nonceSize]
