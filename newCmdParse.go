@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/binary"
 	"encoding/json"
+	"math/rand"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -66,7 +68,55 @@ func newParser(input []byte, player *playerData) {
 		}
 		writeToPlayer(player, RECV_LOBBYLIST, data)
 	case CMD_JOINLOBBY:
-		//join lobby
+		inputID := binary.BigEndian.Uint64(data)
+		if player.inLobby != nil {
+			doLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.inLobby.ID)
+			return
+		}
+		length := 3
+		for l, lobby := range lobbyList {
+			if lobby.ID == inputID {
+				player.Direction = DIR_SOUTH
+
+				/* Reuse dead slots */
+				var makeNew bool = true
+				for f, find := range lobby.Players {
+					if find.DeadFor > 4 {
+						lobby.Players[f] = player
+						makeNew = false
+						doLog(true, "Reused old player slot.")
+						break
+					}
+				}
+				if makeNew {
+					lobby.Players = append(lobby.Players, player)
+				}
+				player.inLobby = lobbyList[l]
+
+				var randx, randy uint16
+				for x := 0; x < 10000; x++ {
+					randx = uint16(rand.Intn(defaultBoardSize))
+					randy = uint16(rand.Intn(defaultBoardSize))
+					if !didCollidePlayer(player.inLobby, player) {
+						break
+					}
+				}
+
+				tiles := []XY{}
+				for x := 0; x < length; x++ {
+					tiles = append(tiles, XY{X: randx, Y: randy})
+				}
+				player.Tiles = tiles
+				player.Length = uint32(length)
+
+				doLog(true, "Player: %v joined lobby: %v at %v,%v", player.ID, inputID, randx, randy)
+				playerActivity(player)
+				writeToPlayer(player, CMD_JOINLOBBY, data)
+				return
+			}
+		}
+		doLog(true, "Could not find lobby: %v for player: %v", inputID, player.ID)
+		return
 	case CMD_CREATELOBBY:
 		//create lobby
 	case CMD_SETLOBBY:

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"math/rand"
 	"runtime"
 	"time"
@@ -34,7 +35,6 @@ func processLobbies() {
 					lobby.Ticks++
 					playersAlive := 0
 
-					//lobbyList[l].outBuf = nil
 					for _, player := range lobby.Players {
 						/* Ignore, dead or not init */
 						if player.Length < 1 {
@@ -83,6 +83,17 @@ func processLobbies() {
 							player.Tiles = append(player.Tiles[1:], XY{X: newHead.X, Y: newHead.Y})
 						}
 						player.Head = head
+
+					}
+					outBuf, _ := json.Marshal(&lobby)
+					for _, player := range lobby.Players {
+						if player.isBot || player.conn == nil {
+							continue
+						}
+						if !writeToPlayer(player, RECV_KEYFRAME, outBuf) {
+							player.conn = nil
+							doLog(true, "Player.conn write failed, invalidated conn.")
+						}
 					}
 					maxRespawn := 10
 					/* Respawn players in dead lobbies */

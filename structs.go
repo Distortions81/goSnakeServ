@@ -18,7 +18,7 @@ type lobbyData struct {
 	Apple     XY            `json:"a"`
 	boardSize uint16
 
-	//outBuf []byte
+	netBuf []byte
 
 	lock sync.Mutex
 }
