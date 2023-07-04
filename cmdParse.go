@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"goSnakeServ/cwlog"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -19,11 +18,11 @@ func commandParser(input string, c *websocket.Conn) {
 		id := makeUID()
 		newPlayer := playerData{Name: genName(), ID: id, lastActive: time.Now(), Direction: DIR_SOUTH}
 
-		cwlog.DoLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
+		doLog(true, "Created player %v (%v).", newPlayer.Name, newPlayer.ID)
 
 		_, err := json.Marshal(newPlayer)
 		if err != nil {
-			cwlog.DoLog(true, "commandParser: init: err: %v", err)
+			doLog(true, "commandParser: init: err: %v", err)
 			return
 		}
 
@@ -38,11 +37,11 @@ func commandParser(input string, c *websocket.Conn) {
 	cmdPart := strings.Split(input, ":")
 
 	if len(cmdPart) != 3 {
-		cwlog.DoLog(true, "Malformed request: %v", input)
+		doLog(true, "Malformed request: %v", input)
 		return
 	}
 
-	//cwlog.DoLog(true, "%v: %v: '%v'", cmdPart[0], cmdPart[1], cmdPart[2])
+	//doLog(true, "%v: %v: '%v'", cmdPart[0], cmdPart[1], cmdPart[2])
 	useridstr, command, data := cmdPart[0], cmdPart[1], cmdPart[2]
 	userid, _ := strconv.ParseUint(useridstr, 10, 64)
 
@@ -52,14 +51,14 @@ func commandParser(input string, c *websocket.Conn) {
 	pListLock.RUnlock()
 
 	if player == nil {
-		cwlog.DoLog(true, "Invalid userid: %v", useridstr)
+		doLog(true, "Invalid userid: %v", useridstr)
 		return
 	}
 
 	if command == "go" {
 		val, err := strconv.ParseUint(data, 10, 8)
 		if err != nil {
-			cwlog.DoLog(true, "commandParser: go: ParseUint: Error: %v", err)
+			doLog(true, "commandParser: go: ParseUint: Error: %v", err)
 			return
 		}
 		if player.inLobby == nil {
@@ -91,7 +90,7 @@ func commandParser(input string, c *websocket.Conn) {
 		//writeByte(c, (buf))
 
 	} else if command == "ping" { /* Keep alive, and check latency */
-		cwlog.DoLog(true, "Client: %v (PING)", player.ID)
+		doLog(true, "Client: %v (PING)", player.ID)
 		playerActivity(player)
 		//writeByte(c, []byte("PONG"))
 		return
@@ -105,11 +104,11 @@ func commandParser(input string, c *websocket.Conn) {
 	} else if command == "join" { /* Join a lobby */
 		inputID, err := strconv.ParseUint(data, 10, 64)
 		if err != nil {
-			cwlog.DoLog(true, "commandParser: Join: ParseUint: Error: %v", err)
+			doLog(true, "commandParser: Join: ParseUint: Error: %v", err)
 			return
 		}
 		if player.inLobby != nil {
-			cwlog.DoLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.inLobby.ID)
+			doLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.inLobby.ID)
 			return
 		}
 		length := 3
@@ -123,7 +122,7 @@ func commandParser(input string, c *websocket.Conn) {
 					if find.DeadFor > 4 {
 						lobby.Players[f] = player
 						makeNew = false
-						cwlog.DoLog(true, "Reused old player slot.")
+						doLog(true, "Reused old player slot.")
 						break
 					}
 				}
@@ -148,23 +147,23 @@ func commandParser(input string, c *websocket.Conn) {
 				player.Tiles = tiles
 				player.Length = uint32(length)
 
-				cwlog.DoLog(true, "Player: %v joined lobby: %v at %v,%v", player.ID, inputID, randx, randy)
+				doLog(true, "Player: %v joined lobby: %v at %v,%v", player.ID, inputID, randx, randy)
 				playerActivity(player)
 				writeTo(c, "joined", "%v", inputID)
 				return
 			}
 		}
-		cwlog.DoLog(true, "Could not find lobby: %v for player: %v", inputID, player.ID)
+		doLog(true, "Could not find lobby: %v for player: %v", inputID, player.ID)
 		return
 
 	} else if command == "name" { /* Change player name */
 		newName := filterName(data)
 		if playerNameUnique(newName) {
-			cwlog.DoLog(true, "Changed player '%v' (%v) name to '%v'", player.Name, player.ID, newName)
+			doLog(true, "Changed player '%v' (%v) name to '%v'", player.Name, player.ID, newName)
 			player.Name = newName
 			playerActivity(player)
 		} else {
-			cwlog.DoLog(true, "Player (%v) tried to rename to a non-unique name: '%v'", player.ID, newName)
+			doLog(true, "Player (%v) tried to rename to a non-unique name: '%v'", player.ID, newName)
 		}
 		writeTo(c, "name", "%v", player.Name)
 		return
@@ -178,7 +177,7 @@ func commandParser(input string, c *websocket.Conn) {
 		}
 		return
 	} else {
-		cwlog.DoLog(true, "Unknown Command.")
+		doLog(true, "Unknown Command.")
 		return
 	}
 }
@@ -187,7 +186,7 @@ func writeByte(c *websocket.Conn, header byte, input []byte) bool {
 
 	err := c.WriteMessage(websocket.BinaryMessage, append([]byte{header}, input...))
 	if err != nil {
-		cwlog.DoLog(true, "Error writing response: %v", err)
+		doLog(true, "Error writing response: %v", err)
 		c.Close()
 		return false
 	}
@@ -200,12 +199,12 @@ func writeByteTo(c *websocket.Conn, command string, input []byte) bool {
 
 	err := c.WriteMessage(websocket.BinaryMessage, buf)
 	if err != nil {
-		cwlog.DoLog(true, "Error writing response: %v", err)
+		doLog(true, "Error writing response: %v", err)
 		c.Close()
 		return false
 	}
 
-	cwlog.DoLog(true, "WroteTo %v:%v", command, string(input))
+	doLog(true, "WroteTo %v:%v", command, string(input))
 	return true
 }
 

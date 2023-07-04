@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"goSnakeServ/cwlog"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -20,9 +19,9 @@ func newParser(input []byte, player *playerData) {
 
 	cmdName := cmdNames[d]
 	if cmdName == "" {
-		cwlog.DoLog(true, "Received: 0x%02X, %v\n", d, string(data))
+		doLog(true, "Received: 0x%02X, %v\n", d, string(data))
 	} else {
-		cwlog.DoLog(true, "Received: %v, %v\n", cmdName, string(data))
+		doLog(true, "Received: %v, %v\n", cmdName, string(data))
 	}
 	switch d {
 	case CMD_INIT: //INIT
@@ -41,17 +40,17 @@ func newParser(input []byte, player *playerData) {
 
 		b, err := json.Marshal(player)
 		if err != nil {
-			cwlog.DoLog(true, "newParser: init: err: %v", err)
+			doLog(true, "newParser: init: err: %v", err)
 			return
 		}
 
 		writeToPlayer(player, byte(RECV_LOCALPLAYER), b)
 	case CMD_PINGPONG: //PING
 		if checkSecret(player, data) {
-			//cwlog.DoLog(true, "PING")
+			//doLog(true, "PING")
 			writeToPlayer(player, byte(CMD_PINGPONG), generateSecret(player))
 		} else {
-			cwlog.DoLog(true, "malformed PING")
+			doLog(true, "malformed PING")
 			player.conn.Close()
 			return
 		}
@@ -79,7 +78,7 @@ func newParser(input []byte, player *playerData) {
 		//go dir
 
 	default:
-		cwlog.DoLog(true, "Received invalid: 0x%02X, %v\n", d, string(data))
+		doLog(true, "Received invalid: 0x%02X, %v\n", d, string(data))
 		player.conn.Close()
 		return
 	}
@@ -98,7 +97,7 @@ func writeToPlayer(player *playerData, header byte, input []byte) bool {
 		err = player.conn.WriteMessage(websocket.BinaryMessage, append([]byte{header}, input...))
 	}
 	if err != nil {
-		cwlog.DoLog(true, "Error writing response: %v", err)
+		doLog(true, "Error writing response: %v", err)
 		player.conn.Close()
 		return false
 	}

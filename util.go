@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"goSnakeServ/cwlog"
 	"math/rand"
 	"sync"
 	"time"
@@ -54,7 +53,7 @@ func makeUID() uint64 {
 	/* Keep regenerating until id is unique */
 	for pList[testID] != nil {
 		testID = rand.Uint64()
-		cwlog.DoLog(true, "makeUID: Duplicate UID: %v, regenerating.", testID)
+		doLog(true, "makeUID: Duplicate UID: %v, regenerating.", testID)
 	}
 
 	return testID
@@ -85,7 +84,7 @@ func genName() string {
 			if playerNameUnique(name) {
 				return name
 			}
-			cwlog.DoLog(true, "Regenerating, name dupe: %v", name)
+			doLog(true, "Regenerating, name dupe: %v", name)
 		}
 		outOfNames = true
 	}

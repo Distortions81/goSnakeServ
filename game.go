@@ -1,7 +1,6 @@
 package main
 
 import (
-	"goSnakeServ/cwlog"
 	"math/rand"
 	"runtime"
 	"time"
@@ -68,7 +67,7 @@ func processLobbies() {
 							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.Direction) {
 							player.DeadFor = 1
 							if !player.isBot {
-								cwlog.DoLog(true, "%v %v #%v died at %v,%v in lobby %v.\n", ptype, player.Name, player.ID, player.Head.X, player.Head.Y, player.inLobby.Name)
+								doLog(true, "%v %v #%v died at %v,%v in lobby %v.\n", ptype, player.Name, player.ID, player.Head.X, player.Head.Y, player.inLobby.Name)
 							}
 							continue
 						}
@@ -78,7 +77,7 @@ func processLobbies() {
 							player.Tiles = append(player.Tiles, XY{X: newHead.X, Y: newHead.Y})
 							player.Length++
 							if !player.isBot {
-								cwlog.DoLog(true, "%v %v ate an apple at %v,%v in lobby %v.", ptype, player.Name, player.Head.X, player.Head.Y, player.inLobby.Name)
+								doLog(true, "%v %v ate an apple at %v,%v in lobby %v.", ptype, player.Name, player.Head.X, player.Head.Y, player.inLobby.Name)
 							}
 						} else {
 							player.Tiles = append(player.Tiles[1:], XY{X: newHead.X, Y: newHead.Y})
@@ -88,7 +87,7 @@ func processLobbies() {
 					maxRespawn := 10
 					/* Respawn players in dead lobbies */
 					if playersAlive < 5 {
-						cwlog.DoLog(true, "Reviving AIs in lobby: %v", lobby.Name)
+						doLog(true, "Reviving AIs in lobby: %v", lobby.Name)
 						for _, testP := range lobby.Players {
 							if testP.isBot && testP.Length == 0 && maxRespawn > 0 {
 								testP.Length = 3
@@ -129,7 +128,7 @@ func processLobbies() {
 
 			} else { //We are lagging behind realtime
 				time.Sleep(time.Millisecond)
-				cwlog.DoLog(true, "Unable to keep up: took: %v", took)
+				doLog(true, "Unable to keep up: took: %v", took)
 			}
 		}
 	}()

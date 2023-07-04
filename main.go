@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"goSnakeServ/cwlog"
 	"net/http"
 	"runtime/debug"
 	"time"
@@ -20,8 +19,8 @@ var fileServer http.Handler
 
 func main() {
 
-	cwlog.StartLog()
-	cwlog.LogDaemon()
+	startLog()
+	logDaemon()
 
 	/* Sleep on exit, to avoid missing log output */
 	defer time.Sleep(time.Second)
@@ -33,24 +32,24 @@ func main() {
 	/* Read database */
 	err := readDB()
 	if err != nil {
-		cwlog.DoLog(true, "Error loading secrets: %v", err)
+		doLog(true, "Error loading secrets: %v", err)
 	} else {
-		cwlog.DoLog(true, "Loaded db.")
+		doLog(true, "Loaded db.")
 	}
 
 	writeDB(true)
 
-	cwlog.DoLog(true, "Max random names: %v\n", namegenerator.GetMaxNames())
+	doLog(true, "Max random names: %v\n", namegenerator.GetMaxNames())
 
 	processLobbies()
 
 	/* Load certificates */
 	cert, err := tls.LoadX509KeyPair("fullchain.pem", "privkey.pem")
 	if err != nil {
-		cwlog.DoLog(true, "Error loading TLS key pair: %v (fullchain.pem, privkey.pem)", err)
+		doLog(true, "Error loading TLS key pair: %v (fullchain.pem, privkey.pem)", err)
 		return
 	}
-	cwlog.DoLog(true, "Loaded certs.")
+	doLog(true, "Loaded certs.")
 
 	/* Download server */
 	fileServer = http.FileServer(http.Dir("www"))
@@ -78,12 +77,12 @@ func main() {
 	}
 
 	// Start server
-	cwlog.DoLog(true, "Starting server...")
+	doLog(true, "Starting server...")
 	err = server.ListenAndServeTLS("", "")
 	if err != nil {
-		cwlog.DoLog(true, "ListenAndServeTLS: %v", err)
+		doLog(true, "ListenAndServeTLS: %v", err)
 		panic(err)
 	}
 
-	cwlog.DoLog(true, "Goodbye.")
+	doLog(true, "Goodbye.")
 }

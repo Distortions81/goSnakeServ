@@ -1,7 +1,6 @@
 package main
 
 import (
-	"goSnakeServ/cwlog"
 	"log"
 	"net/http"
 
@@ -29,7 +28,7 @@ func handleConnection(conn *websocket.Conn) {
 	for {
 		_, data, err := conn.ReadMessage()
 		if err != nil {
-			cwlog.DoLog(true, "Error on connection read: %v", err)
+			doLog(true, "Error on connection read: %v", err)
 			conn.Close()
 			break
 		}
