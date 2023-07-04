@@ -18,6 +18,9 @@ func processLobbies() {
 		for {
 			loopStart := time.Now()
 
+			var numBytes int
+			var numPlayers int
+
 			lobbyLock.Lock()
 			for l := range lobbyList {
 
@@ -86,6 +89,7 @@ func processLobbies() {
 
 					}
 					outBuf, _ := json.Marshal(&lobby)
+
 					for _, player := range lobby.Players {
 						if player.isBot || player.conn == nil {
 							continue
@@ -93,8 +97,12 @@ func processLobbies() {
 						if !writeToPlayer(player, RECV_KEYFRAME, outBuf) {
 							player.conn = nil
 							doLog(true, "Player.conn write failed, invalidated conn.")
+							continue
 						}
+						numPlayers++
+						numBytes += len(outBuf)
 					}
+
 					maxRespawn := 10
 					/* Respawn players in dead lobbies */
 					if playersAlive < 5 {
@@ -130,6 +138,10 @@ func processLobbies() {
 			wg.Wait()
 
 			lobbyLock.Unlock()
+
+			if numBytes > 0 && numPlayers > 0 {
+				doLog(true, "Wrote %v bytes for %v players.", numBytes, numPlayers)
+			}
 
 			took := time.Since(loopStart)
 			remaining := (time.Millisecond * FrameSpeed) - took
