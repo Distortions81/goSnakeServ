@@ -8,14 +8,15 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func newParser(data []byte, player *playerData) {
-	dataLen := len(data)
+func newParser(input []byte, player *playerData) {
+	inputLen := len(input)
 
-	if dataLen <= 0 {
+	if inputLen <= 0 {
 		return
 	}
 
-	d := data[0]
+	d := input[0]
+	data := input[1:]
 
 	cmdName := cmdNames[d]
 	if cmdName == "" {
@@ -26,6 +27,11 @@ func newParser(data []byte, player *playerData) {
 
 	switch d {
 	case CMD_INIT: //INIT
+		if !checkSecret(data) {
+			player.conn.Close()
+			return
+		}
+
 		player.ID = makeUID()
 		player.lastActive = time.Now()
 		player.Name = genName()
