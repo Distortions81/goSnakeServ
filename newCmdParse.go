@@ -82,6 +82,7 @@ func newParser(input []byte, player *playerData) {
 			return
 		}
 		length := 3
+		player.DeadFor = 0
 
 		/* OPTIMIZE */
 		for l, lobby := range lobbyList {
