@@ -34,6 +34,8 @@ type playerData struct {
 	Head      XY     `json:"h"`
 	oldDir    uint8
 	Direction uint8 `json:"d"`
+	dirs      []uint8
+	numDirs   uint8
 
 	lastActive time.Time
 	lastPing   time.Time

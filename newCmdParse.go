@@ -133,7 +133,10 @@ func newParser(input []byte, player *playerData) {
 	case CMD_GODIR:
 		if player.inLobby != nil {
 			player.inLobby.lock.Lock()
-			player.Direction = uint8(data[0])
+			if player.numDirs < 3 {
+				player.numDirs++
+				player.dirs = append(player.dirs, uint8(data[0]))
+			}
 			player.inLobby.lock.Unlock()
 		}
 	default:

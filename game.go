@@ -71,10 +71,21 @@ func processLobbies() {
 						}
 
 						head := player.Tiles[player.Length-1]
-						if player.Direction == reverseDir(player.oldDir) {
-							player.Direction = player.oldDir
+						if player.numDirs > 0 {
+							newDir := player.dirs[0]
+
+							if player.numDirs > 1 {
+								player.dirs = append(player.dirs[:0], player.dirs[1:]...)
+							} else {
+								player.dirs = nil
+							}
+							player.numDirs--
+
+							if newDir != reverseDir(player.oldDir) {
+								player.Direction = newDir
+							}
+							player.oldDir = player.Direction
 						}
-						player.oldDir = player.Direction
 
 						newHead := goDir(player.Direction, head)
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
