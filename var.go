@@ -41,7 +41,7 @@ func makeAIs() {
 	length := 3
 	for x := 0; x < testPlayers; x++ {
 		id := makeUID()
-		pList[id] = &playerData{Name: genName(), ID: id, Length: uint32(length), Direction: uint8(rand.Intn(DIR_WEST)), isBot: true}
+		pList[id] = &playerData{Name: genName(), ID: id, Length: uint32(length), Direction: uint8(rand.Intn(DIR_WEST)), isBot: true, DeadFor: -8}
 	}
 
 	for p := range pList {

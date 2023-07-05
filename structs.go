@@ -28,7 +28,7 @@ type playerData struct {
 	ID   uint64 `json:"i"`
 	Name string `json:"n"`
 
-	DeadFor   uint8  `json:"x"`
+	DeadFor   int8   `json:"x"`
 	Length    uint32 `json:"l"`
 	Tiles     []XY   `json:"t"`
 	Head      XY     `json:"h"`

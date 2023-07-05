@@ -57,6 +57,9 @@ func processLobbies() {
 							}
 							player.DeadFor++
 							continue
+						} else if player.DeadFor < 0 {
+							player.DeadFor++
+							continue
 						}
 						playersAlive++
 
@@ -132,7 +135,7 @@ func processLobbies() {
 						for _, testP := range lobby.Players {
 							if testP.isBot && testP.Length == 0 && maxRespawn > 0 {
 								testP.Length = 3
-								testP.DeadFor = 0
+								testP.DeadFor = -8
 								testP.isBot = true
 
 								maxRespawn--
@@ -216,7 +219,15 @@ func didCollideApple(player *playerData) bool {
 
 /* Quick and dirty, optimize later */
 func didCollidePlayer(lobby *lobbyData, playerA *playerData) bool {
+	if playerA.DeadFor < 0 {
+		playerA.DeadFor = -8
+		return false
+	}
 	for _, playerB := range lobby.Players {
+		if playerB.DeadFor < 0 {
+			playerA.DeadFor = -8
+			return false
+		}
 		for _, tileA := range playerA.Tiles {
 			for _, tileB := range playerB.Tiles {
 				if tileA.X == tileB.X && tileA.Y == tileB.Y {
@@ -239,7 +250,7 @@ func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
 	newHead := goDir(dir, head)
 
 	for _, playerB := range lobby.Players {
-		if playerB.DeadFor != 0 {
+		if playerB.DeadFor > 0 {
 			continue
 		}
 		for _, tileA := range playerB.Tiles {
