@@ -69,12 +69,20 @@ func newParser(input []byte, player *playerData) {
 		}
 		writeToPlayer(player, RECV_LOBBYLIST, data)
 	case CMD_JOINLOBBY:
+
 		inputID := binary.BigEndian.Uint64(data)
+
+		if inputID == 0 {
+			deleteFromLobby(player)
+			return
+		}
+
 		if player.inLobby != nil {
 			doLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.inLobby.ID)
 			return
 		}
 		length := 3
+
 		/* OPTIMIZE */
 		for l, lobby := range lobbyList {
 			if lobby.ID == inputID {
@@ -167,4 +175,34 @@ func writeToPlayer(player *playerData, header byte, input []byte) bool {
 		return false
 	}
 	return true
+}
+
+func deleteFromLobby(player *playerData) {
+	if player.inLobby == nil {
+		return
+	}
+
+	player.inLobby.lock.Lock()
+	defer player.inLobby.lock.Unlock()
+
+	deleteme := -1
+	count := 0
+	for p, target := range player.inLobby.Players {
+		count++
+		if target.ID == player.ID {
+			deleteme = p
+		}
+	}
+
+	if deleteme != -1 {
+		if count > 0 {
+			player.inLobby.Players = append(player.inLobby.Players[:deleteme], player.inLobby.Players[deleteme+1:]...)
+		} else {
+			player.inLobby.Players = nil
+		}
+	}
+
+	player.DeadFor = 1
+	player.inLobby = nil
+
 }
