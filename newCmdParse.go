@@ -48,6 +48,7 @@ func newParser(input []byte, player *playerData) {
 	case CMD_PINGPONG: //PING
 		if checkSecret(player, data) {
 			//doLog(true, "PING")
+			player.lastPing = time.Now()
 			writeToPlayer(player, byte(CMD_PINGPONG), generateSecret(player))
 		} else {
 			doLog(true, "malformed PING")
@@ -60,7 +61,9 @@ func newParser(input []byte, player *playerData) {
 		//Set Name
 
 	case CMD_GETLOBBIES:
+		lobbyLock.Lock()
 		data, err := json.Marshal(&lobbyList)
+		lobbyLock.Unlock()
 		if err != nil || data == nil {
 			return
 		}
@@ -72,9 +75,14 @@ func newParser(input []byte, player *playerData) {
 			return
 		}
 		length := 3
+		/* OPTIMIZE */
 		for l, lobby := range lobbyList {
 			if lobby.ID == inputID {
+				lobby.lock.Lock()
+				defer lobby.lock.Unlock()
+
 				player.Direction = DIR_SOUTH
+				player.oldDir = DIR_SOUTH
 
 				/* Reuse dead slots */
 				var makeNew bool = true
@@ -123,8 +131,11 @@ func newParser(input []byte, player *playerData) {
 	case CMD_SPAWN:
 		//spawn
 	case CMD_GODIR:
-		player.Direction = uint8(data[0])
-
+		if player.inLobby != nil {
+			player.inLobby.lock.Lock()
+			player.Direction = uint8(data[0])
+			player.inLobby.lock.Unlock()
+		}
 	default:
 		doLog(true, "Received invalid: 0x%02X, %v\n", d, string(data))
 		player.conn.Close()

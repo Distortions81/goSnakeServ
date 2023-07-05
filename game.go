@@ -40,8 +40,11 @@ func processLobbies() {
 
 					lobby.Ticks++
 					playersAlive := 0
+					totalPlayers := 0
 
 					for _, player := range lobby.Players {
+						totalPlayers++
+
 						/* Ignore, dead or not init */
 						if player.Length < 1 {
 							continue
@@ -68,6 +71,11 @@ func processLobbies() {
 						}
 
 						head := player.Tiles[player.Length-1]
+						if player.Direction == reverseDir(player.oldDir) {
+							player.Direction = player.oldDir
+						}
+						player.oldDir = player.Direction
+
 						newHead := goDir(player.Direction, head)
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
 							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.Direction) {
@@ -106,9 +114,9 @@ func processLobbies() {
 						numBytes += len(outBuf)
 					}
 
-					maxRespawn := 10
+					maxRespawn := 1
 					/* Respawn players in dead lobbies */
-					if playersAlive < 5 {
+					if playersAlive <= 2 && totalPlayers > 2 {
 						doLog(true, "Reviving AIs in lobby: %v", lobby.Name)
 						for _, testP := range lobby.Players {
 							if testP.isBot && testP.Length == 0 && maxRespawn > 0 {

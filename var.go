@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	testlobbies      = 10
-	testPlayers      = testlobbies * 15
+	testlobbies      = 6
+	testPlayers      = testlobbies * 8
 	defaultBoardSize = 32
 )
 

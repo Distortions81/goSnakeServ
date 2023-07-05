@@ -32,9 +32,11 @@ type playerData struct {
 	Length    uint32 `json:"l"`
 	Tiles     []XY   `json:"t"`
 	Head      XY     `json:"h"`
-	Direction uint8  `json:"d"`
+	oldDir    uint8
+	Direction uint8 `json:"d"`
 
 	lastActive time.Time
+	lastPing   time.Time
 
 	inLobby *lobbyData
 	myLobby *lobbyData
