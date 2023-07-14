@@ -1,7 +1,8 @@
 package main
 
 import (
-	"encoding/json"
+	"bytes"
+	"encoding/binary"
 	"math/rand"
 	"runtime"
 	"time"
@@ -113,7 +114,7 @@ func processLobbies() {
 						player.Head = head
 
 					}
-					outBuf, _ := json.Marshal(&lobby)
+					outBuf := serializeLobby(lobby)
 
 					for _, player := range lobby.Players {
 						if player.isBot || player.conn == nil {
@@ -317,4 +318,36 @@ func PosIntMod(d, m int) int {
 		return res + m
 	}
 	return res
+}
+
+func serializeLobby(lobby *lobbyData) []byte {
+	var outBuf = new(bytes.Buffer)
+
+	err := binary.Write(outBuf, binary.BigEndian, lobby.ID)
+	if err != nil {
+		doLog(true, "error: %v", err)
+	}
+	err = binary.Write(outBuf, binary.BigEndian, lobby.Ticks)
+	if err != nil {
+		doLog(true, "error: %v", err)
+	}
+	err = binary.Write(outBuf, binary.BigEndian, lobby.Level)
+	if err != nil {
+		doLog(true, "error: %v", err)
+	}
+	err = binary.Write(outBuf, binary.BigEndian, lobby.ShowApple)
+	if err != nil {
+		doLog(true, "error: %v", err)
+	}
+	err = binary.Write(outBuf, binary.BigEndian, lobby.Apple.X)
+	if err != nil {
+		doLog(true, "error: %v", err)
+	}
+	err = binary.Write(outBuf, binary.BigEndian, lobby.Apple.Y)
+	if err != nil {
+		doLog(true, "error: %v", err)
+	}
+
+	//fmt.Printf("data: '%v'\n", outBuf.Bytes())
+	return outBuf.Bytes()
 }
