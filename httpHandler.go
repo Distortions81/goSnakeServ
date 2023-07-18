@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{EnableCompression: true}
+var upgrader = websocket.Upgrader{EnableCompression: false}
 
 func gsHandler(w http.ResponseWriter, r *http.Request) {
 
