@@ -347,6 +347,7 @@ func PosIntMod(d, m int) int {
 func binaryGameUpdate(lobby *lobbyData) []byte {
 	var outBuf = new(bytes.Buffer)
 
+	//Apple position
 	binary.Write(outBuf, binary.BigEndian, lobby.Apple.X)
 	binary.Write(outBuf, binary.BigEndian, lobby.Apple.Y)
 
@@ -360,9 +361,8 @@ func binaryGameUpdate(lobby *lobbyData) []byte {
 		binary.Write(outBuf, binary.BigEndian, player.Length)
 		tLen := uint32(len(player.Tiles))
 		for x := uint32(0); x < tLen; x++ {
-			//Tile X
+			//Tile X/Y
 			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].X)
-			//Tile Y
 			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].Y)
 		}
 	}
