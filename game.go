@@ -382,6 +382,7 @@ func serializeLobbyBinary(lobby *lobbyData) []byte {
 		binary.Write(outBuf, binary.BigEndian, byte(lobby.Name[x]))
 	}
 
+	//Lobby data
 	binary.Write(outBuf, binary.BigEndian, lobby.ID)
 	binary.Write(outBuf, binary.BigEndian, lobby.Ticks)
 	binary.Write(outBuf, binary.BigEndian, lobby.Level)
@@ -410,9 +411,8 @@ func serializeLobbyBinary(lobby *lobbyData) []byte {
 		binary.Write(outBuf, binary.BigEndian, player.Length)
 		tLen := uint32(len(player.Tiles))
 		for x := uint32(0); x < tLen; x++ {
-			//Tile X
+			//Tile position
 			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].X)
-			//Tile Y
 			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].Y)
 		}
 	}
