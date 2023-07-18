@@ -18,7 +18,8 @@ type lobbyData struct {
 	Apple     XY            `json:"a"`
 	boardSize uint16
 
-	lock sync.Mutex
+	dirty bool
+	lock  sync.Mutex
 }
 
 type playerData struct {

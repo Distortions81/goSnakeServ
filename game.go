@@ -53,6 +53,7 @@ func processLobbies() {
 						if player.DeadFor > 0 {
 							if player.DeadFor > 4 {
 								player.Tiles = []XY{{}}
+								player.ID = 0
 								player.Length = 0
 								continue
 							}
@@ -114,19 +115,41 @@ func processLobbies() {
 						player.Head = head
 
 					}
-					outBuf := serializeLobby(lobby)
 
-					for _, player := range lobby.Players {
-						if player.isBot || player.conn == nil {
-							continue
+					/* If needed, send keyframe */
+					if lobby.dirty {
+						outBuf := serializeLobbyBinary(lobby)
+
+						for _, player := range lobby.Players {
+							if player.isBot || player.conn == nil {
+								continue
+							}
+							if !writeToPlayer(player, RECV_KEYFRAME, outBuf) {
+								player.conn = nil
+								doLog(true, "Player.conn write failed, invalidated conn.")
+								continue
+							}
+							numPlayers++
+							numBytes += len(outBuf)
 						}
-						if !writeToPlayer(player, RECV_KEYFRAME, outBuf) {
-							player.conn = nil
-							doLog(true, "Player.conn write failed, invalidated conn.")
-							continue
+
+						lobby.dirty = false
+					} else {
+						/* otherwise, just send relevant data*/
+						outBuf := binaryGameUpdate(lobby)
+
+						for _, player := range lobby.Players {
+							if player.isBot || player.conn == nil {
+								continue
+							}
+							if !writeToPlayer(player, RECV_PLAYERUPDATE, outBuf) {
+								player.conn = nil
+								doLog(true, "Player.conn write failed, invalidated conn.")
+								continue
+							}
+							numPlayers++
+							numBytes += len(outBuf)
 						}
-						numPlayers++
-						numBytes += len(outBuf)
 					}
 
 					maxRespawn := 1
@@ -166,7 +189,7 @@ func processLobbies() {
 			lobbyLock.Unlock()
 
 			if gameTicks%240 == 0 && numBytes > 0 && numPlayers > 0 {
-				doLog(true, "Wrote %0.2fkb/sec for %v players.", float32(numBytes)/1024.0/240.0, numPlayers)
+				doLog(true, "Wrote %0.2fkb/sec for %v players.", (float32(numBytes)/1024.0/240.0)*4, numPlayers)
 				numBytes = 0
 			}
 
@@ -320,34 +343,80 @@ func PosIntMod(d, m int) int {
 	return res
 }
 
-func serializeLobby(lobby *lobbyData) []byte {
+// This can be further optimized, once game logic is put into a module both use.
+func binaryGameUpdate(lobby *lobbyData) []byte {
 	var outBuf = new(bytes.Buffer)
 
-	err := binary.Write(outBuf, binary.BigEndian, lobby.ID)
-	if err != nil {
-		doLog(true, "error: %v", err)
-	}
-	err = binary.Write(outBuf, binary.BigEndian, lobby.Ticks)
-	if err != nil {
-		doLog(true, "error: %v", err)
-	}
-	err = binary.Write(outBuf, binary.BigEndian, lobby.Level)
-	if err != nil {
-		doLog(true, "error: %v", err)
-	}
-	err = binary.Write(outBuf, binary.BigEndian, lobby.ShowApple)
-	if err != nil {
-		doLog(true, "error: %v", err)
-	}
-	err = binary.Write(outBuf, binary.BigEndian, lobby.Apple.X)
-	if err != nil {
-		doLog(true, "error: %v", err)
-	}
-	err = binary.Write(outBuf, binary.BigEndian, lobby.Apple.Y)
-	if err != nil {
-		doLog(true, "error: %v", err)
+	binary.Write(outBuf, binary.BigEndian, lobby.Apple.X)
+	binary.Write(outBuf, binary.BigEndian, lobby.Apple.Y)
+
+	//Number of players
+	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
+	for _, player := range lobby.Players {
+		//Player Dead For
+		binary.Write(outBuf, binary.BigEndian, player.DeadFor)
+
+		//Player Length
+		binary.Write(outBuf, binary.BigEndian, player.Length)
+		tLen := uint32(len(player.Tiles))
+		for x := uint32(0); x < tLen; x++ {
+			//Tile X
+			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].X)
+			//Tile Y
+			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].Y)
+		}
 	}
 
-	//fmt.Printf("data: '%v'\n", outBuf.Bytes())
+	//fmt.Printf("data: '%03v'\n", (outBuf.Bytes()))
+	return outBuf.Bytes()
+}
+
+func serializeLobbyBinary(lobby *lobbyData) []byte {
+	var outBuf = new(bytes.Buffer)
+
+	nameLen := uint16(len(lobby.Name))
+	//Lobby Name Len
+	binary.Write(outBuf, binary.BigEndian, nameLen)
+	for x := uint16(0); x < nameLen; x++ {
+		//Lobby Name Character
+		binary.Write(outBuf, binary.BigEndian, byte(lobby.Name[x]))
+	}
+
+	binary.Write(outBuf, binary.BigEndian, lobby.ID)
+	binary.Write(outBuf, binary.BigEndian, lobby.Ticks)
+	binary.Write(outBuf, binary.BigEndian, lobby.Level)
+	binary.Write(outBuf, binary.BigEndian, lobby.ShowApple)
+	binary.Write(outBuf, binary.BigEndian, lobby.Apple.X)
+	binary.Write(outBuf, binary.BigEndian, lobby.Apple.Y)
+
+	//Number of players
+	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
+	for _, player := range lobby.Players {
+		//Player ID
+		binary.Write(outBuf, binary.BigEndian, player.ID)
+
+		nameLen := uint16(len(player.Name))
+		//Player Name Length
+		binary.Write(outBuf, binary.BigEndian, nameLen)
+		for x := uint16(0); x < nameLen; x++ {
+			//Player Name Character
+			binary.Write(outBuf, binary.BigEndian, byte(player.Name[x]))
+		}
+
+		//Player Dead For
+		binary.Write(outBuf, binary.BigEndian, player.DeadFor)
+
+		//Player Length
+		binary.Write(outBuf, binary.BigEndian, player.Length)
+		tLen := uint32(len(player.Tiles))
+		for x := uint32(0); x < tLen; x++ {
+			//Tile X
+			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].X)
+			//Tile Y
+			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].Y)
+		}
+	}
+
+	//fmt.Printf("data: '%03v'\n", (outBuf.Bytes()))
 	return outBuf.Bytes()
 }

@@ -92,6 +92,7 @@ func newParser(input []byte, player *playerData) {
 
 				player.Direction = DIR_SOUTH
 				player.oldDir = DIR_SOUTH
+				player.Tiles = []XY{}
 
 				/* Reuse dead slots */
 				var makeNew bool = true
@@ -110,6 +111,7 @@ func newParser(input []byte, player *playerData) {
 				}
 				if makeNew {
 					lobby.Players = append(lobby.Players, player)
+					lobby.dirty = true
 				}
 				player.inLobby = lobbyList[l]
 
@@ -123,7 +125,7 @@ func newParser(input []byte, player *playerData) {
 				}
 
 				tiles := []XY{}
-				for x := 0; x < length; x++ {
+				for x := 0; x <= length; x++ {
 					tiles = append(tiles, XY{X: randx, Y: randy})
 				}
 				player.Tiles = tiles
@@ -131,7 +133,7 @@ func newParser(input []byte, player *playerData) {
 
 				doLog(true, "Player: %v joined lobby: %v at %v,%v", player.ID, inputID, randx, randy)
 				playerActivity(player)
-				writeToPlayer(player, CMD_JOINLOBBY, data)
+				writeToPlayer(player, CMD_JOINLOBBY, serializeLobbyBinary(lobby))
 				return
 			}
 		}
@@ -191,23 +193,12 @@ func deleteFromLobby(player *playerData) {
 	player.inLobby.lock.Lock()
 	defer player.inLobby.lock.Unlock()
 
-	deleteme := -1
-	count := 0
 	for p, target := range player.inLobby.Players {
-		count++
 		if target.ID == player.ID {
-			deleteme = p
+			player.inLobby.Players[p] = &playerData{}
 		}
 	}
-
-	if deleteme != -1 {
-		if count > 0 {
-			player.inLobby.Players = append(player.inLobby.Players[:deleteme], player.inLobby.Players[deleteme+1:]...)
-		} else {
-			player.inLobby.Players = nil
-		}
-	}
-
+	player.inLobby.dirty = true
 	player.DeadFor = 1
 	player.inLobby = nil
 

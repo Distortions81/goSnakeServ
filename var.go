@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	testlobbies      = 6
+	testlobbies      = 4
 	testPlayers      = testlobbies * 8
 	defaultBoardSize = 32
 )
@@ -47,6 +47,8 @@ func makeAIs() {
 	for p := range pList {
 		rVal := rand.Intn(testlobbies)
 		lobbyList[rVal].Players = append(lobbyList[rVal].Players, pList[p])
+		lobbyList[rVal].dirty = true
+
 		pList[p].inLobby = lobbyList[rVal]
 
 		var randx, randy uint16
