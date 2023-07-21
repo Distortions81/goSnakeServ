@@ -3,9 +3,9 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -64,7 +64,8 @@ func generateSecret(player *playerData) []byte {
 
 	// Generate a random nonce
 	nonce := make([]byte, gcm.NonceSize())
-	if _, err := rand.Read(nonce); err != nil {
+	_, err = rand.Read(nonce)
+	if err != nil {
 		return nil
 	}
 
