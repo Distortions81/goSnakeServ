@@ -45,6 +45,15 @@ func processLobbies() {
 					for _, player := range lobby.Players {
 						totalPlayers++
 
+						/* skip anyone not in this lobby */
+						if !player.isBot {
+							if player.inLobby != nil {
+								if player.inLobby.ID != lobby.ID {
+									continue
+								}
+							}
+						}
+
 						/* Ignore, dead or not init */
 						if player.length < 1 {
 							continue
@@ -52,7 +61,6 @@ func processLobbies() {
 						if player.DeadFor > 0 {
 							if player.DeadFor > 4 {
 								player.tiles = []XY{{}}
-								player.id = 0
 								player.length = 0
 								continue
 							}
@@ -120,8 +128,14 @@ func processLobbies() {
 						outBuf := serializeLobbyBinary(lobby)
 
 						for _, player := range lobby.Players {
+
 							if player.isBot || player.conn == nil {
 								continue
+							}
+							if player.inLobby != nil {
+								if player.inLobby.ID != lobby.ID {
+									continue
+								}
 							}
 							if !writeToPlayer(player, RECV_KEYFRAME, outBuf) {
 								player.conn = nil
@@ -140,6 +154,11 @@ func processLobbies() {
 						for _, player := range lobby.Players {
 							if player.isBot || player.conn == nil {
 								continue
+							}
+							if player.inLobby != nil {
+								if player.inLobby.ID != lobby.ID {
+									continue
+								}
 							}
 							if !writeToPlayer(player, RECV_PLAYERUPDATE, outBuf) {
 								player.conn = nil

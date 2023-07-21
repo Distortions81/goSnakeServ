@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"encoding/json"
 	"math/rand"
@@ -36,15 +37,11 @@ func newParser(input []byte, player *playerData) {
 
 		pListLock.Lock()
 		pList[player.id] = player
+		var outBuf = new(bytes.Buffer)
+		binary.Write(outBuf, binary.BigEndian, player.id)
 		pListLock.Unlock()
 
-		b, err := json.Marshal(player)
-		if err != nil {
-			doLog(true, "newParser: init: err: %v", err)
-			return
-		}
-
-		writeToPlayer(player, byte(RECV_LOCALPLAYER), b)
+		writeToPlayer(player, byte(RECV_LOCALPLAYER), outBuf.Bytes())
 	case CMD_PINGPONG: //PING
 		if checkSecret(player, data) {
 			//doLog(true, "PING")
@@ -193,13 +190,9 @@ func deleteFromLobby(player *playerData) {
 	player.inLobby.lock.Lock()
 	defer player.inLobby.lock.Unlock()
 
-	for p, target := range player.inLobby.Players {
-		if target.id == player.id {
-			player.inLobby.Players[p] = &playerData{}
-		}
-	}
 	player.inLobby.dirty = true
 	player.DeadFor = 1
 	player.inLobby = nil
 
+	doLog(true, "Deleted %v from lobby", player.Name)
 }
