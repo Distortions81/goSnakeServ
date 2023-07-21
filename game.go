@@ -103,8 +103,6 @@ func processLobbies() {
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
 							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.direction) {
 							player.DeadFor = 1
-							player.tiles = []XY{}
-							player.length = 0
 							if !player.isBot {
 								doLog(true, "%v %v #%v died at %v,%v in lobby %v.", ptype, player.Name, player.id, player.head.X, player.head.Y, player.inLobby.Name)
 							}
@@ -373,7 +371,7 @@ func binaryGameUpdate(lobby *lobbyData) []byte {
 	binary.Write(outBuf, binary.BigEndian, lobby.apple.Y)
 
 	//Number of players
-	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)-1))
+	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
 	for _, player := range lobby.Players {
 		//Player Dead For
 		binary.Write(outBuf, binary.BigEndian, player.DeadFor)
@@ -410,7 +408,7 @@ func serializeLobbyBinary(lobby *lobbyData) []byte {
 	binary.Write(outBuf, binary.BigEndian, lobby.apple.Y)
 
 	//Number of players
-	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)-1))
+	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
 	for _, player := range lobby.Players {
 		//Player ID
 		binary.Write(outBuf, binary.BigEndian, player.id)
