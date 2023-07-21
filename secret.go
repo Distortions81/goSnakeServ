@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"encoding/base32"
 	"encoding/base64"
 	"fmt"
 	"math/rand"
@@ -75,29 +74,21 @@ func generateSecret(player *playerData) []byte {
 	// Combine the nonce and encrypted timestamp
 	obfuscatedTimestamp := append(nonce, encryptedData...)
 
-	// Encode the obfuscated timestamp using base64
-	encodedTimestamp := base32.StdEncoding.EncodeToString(obfuscatedTimestamp)
-
-	return []byte(encodedTimestamp)
+	return []byte(obfuscatedTimestamp)
 }
 
 func checkSecret(player *playerData, input []byte) bool {
 
-	// Decode the obfuscated timestamp from base64
-	decodedBytes, err := base32.StdEncoding.DecodeString(string(input))
-	if err != nil {
-		return false
-	}
-
-	inputLen := len(decodedBytes)
+	inputLen := len(input)
 	if inputLen < 12 {
+		doLog(true, "input too short")
 		return false
 	}
 
 	// Retrieve the nonce and encrypted timestamp
 	nonceSize := 12 // GCM nonce size
-	nonce := decodedBytes[:nonceSize]
-	encryptedTimestamp := decodedBytes[nonceSize:]
+	nonce := input[:nonceSize]
+	encryptedTimestamp := input[nonceSize:]
 
 	// Encryption key
 	key, _ := base64.StdEncoding.DecodeString(crypt)
@@ -105,24 +96,27 @@ func checkSecret(player *playerData, input []byte) bool {
 	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)
 	if err != nil {
+		doLog(true, "new cipher failed")
 		return false
 	}
 
 	// Create a new GCM mode
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
+		doLog(true, "new gcm failed")
 		return false
 	}
 
 	// Decrypt the encrypted timestamp using AES-GCM
 	decryptedData, err := gcm.Open(nil, nonce, encryptedTimestamp, nil)
 	if err != nil {
+		doLog(true, "gcm open failed")
 		return false
 	}
 
 	parts := strings.Split(string(decryptedData), ",")
 	if len(parts) != 2 {
-		//doLog(true, "split failed")
+		doLog(true, "split failed")
 		return false
 	}
 	decodedTimestamp := []byte(parts[0])
@@ -131,18 +125,21 @@ func checkSecret(player *playerData, input []byte) bool {
 	if player == nil {
 		ID, _ := base64.StdEncoding.DecodeString(helloStr)
 		if playerID != string(ID) {
+			doLog(true, "hello decode failed")
 			return false
 		}
 	} else {
 		ID := strconv.FormatUint(uint64(player.id), 18)
 		if playerID != ID {
-			return false
+			doLog(true, "playerid incorrect")
+			//return false
 		}
 	}
 
 	// Convert the decrypted timestamp bytes to an integer
 	timestamp, err := strconv.ParseInt(string(decodedTimestamp), 27, 64)
 	if err != nil {
+		doLog(true, "timestamp parse failed")
 		return false
 	}
 
@@ -156,6 +153,7 @@ func checkSecret(player *playerData, input []byte) bool {
 	if diff <= acceptableDuration || diff >= acceptableDuration {
 		return true
 	} else {
+		doLog(true, "secret expired")
 		return false
 	}
 }
