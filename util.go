@@ -45,15 +45,29 @@ func goDir(dir uint8, pos XY) XY {
 
 var UIDLock sync.Mutex
 
-func makeUID() uint64 {
+func makePlayerUID() uint32 {
 	UIDLock.Lock()
 	defer UIDLock.Unlock()
-	testID := rand.Uint64()
+	testID := rand.Uint32()
 
 	/* Keep regenerating until id is unique */
 	for pList[testID] != nil {
-		testID = rand.Uint64()
-		doLog(true, "makeUID: Duplicate UID: %v, regenerating.", testID)
+		testID = rand.Uint32()
+		doLog(true, "makePlayerUID: Duplicate UID: %v, regenerating.", testID)
+	}
+
+	return testID
+}
+
+func makeLobbyUID() uint32 {
+	UIDLock.Lock()
+	defer UIDLock.Unlock()
+	testID := rand.Uint32()
+
+	/* Keep regenerating until id is unique */
+	for lobbyList[testID] != nil {
+		testID = rand.Uint32()
+		doLog(true, "makeLobbyUID: Duplicate UID: %v, regenerating.", testID)
 	}
 
 	return testID
@@ -71,7 +85,7 @@ func filterName(input string) string {
 }
 
 var genUsernameLock sync.Mutex
-var uniqueNameNum uint64
+var uniqueNameNum uint32
 var outOfNames bool
 
 func genName() string {

@@ -8,7 +8,7 @@ import (
 )
 
 type lobbyData struct {
-	ID   uint64 `json:"i"`
+	ID   uint32 `json:"i"`
 	Name string `json:"n"`
 
 	Players   []*playerData `json:"p"`
@@ -26,7 +26,7 @@ type playerData struct {
 	conn     *websocket.Conn
 	connLock sync.Mutex
 
-	ID   uint64 `json:"i"`
+	ID   uint32 `json:"i"`
 	Name string `json:"n"`
 
 	DeadFor   int8   `json:"x"`

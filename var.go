@@ -15,7 +15,7 @@ var (
 	lobbyList []*lobbyData
 	lobbyLock sync.RWMutex
 
-	pList     map[uint64]*playerData
+	pList     map[uint32]*playerData
 	pListLock sync.RWMutex
 )
 
@@ -25,14 +25,14 @@ func init() {
 
 	makeTestLobbies()
 
-	pList = make(map[uint64]*playerData)
+	pList = make(map[uint32]*playerData)
 
 	makeAIs()
 }
 
 func makeTestLobbies() {
 	for x := 0; x < testlobbies; x++ {
-		newLobby := &lobbyData{ID: makeUID(), Name: genName(), boardSize: defaultBoardSize}
+		newLobby := &lobbyData{ID: makePlayerUID(), Name: genName(), boardSize: defaultBoardSize}
 		lobbyList = append(lobbyList, newLobby)
 	}
 }
@@ -40,7 +40,7 @@ func makeTestLobbies() {
 func makeAIs() {
 	length := 3
 	for x := 0; x < testPlayers; x++ {
-		id := makeUID()
+		id := makePlayerUID()
 		pList[id] = &playerData{Name: genName(), ID: id, Length: uint32(length), Direction: uint8(rand.Intn(DIR_WEST)), isBot: true, DeadFor: -8}
 	}
 

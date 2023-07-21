@@ -21,7 +21,7 @@ func newParser(input []byte, player *playerData) {
 
 	cmdName := cmdNames[d]
 	if cmdName != "" {
-		doLog(true, "Received: %v\n", cmdName)
+		doLog(true, "Received: %v", cmdName)
 	}
 	switch d {
 	case CMD_INIT: //INIT
@@ -30,7 +30,7 @@ func newParser(input []byte, player *playerData) {
 			return
 		}
 
-		player.ID = makeUID()
+		player.ID = makePlayerUID()
 		player.lastActive = time.Now()
 		player.Name = genName()
 
@@ -52,7 +52,7 @@ func newParser(input []byte, player *playerData) {
 			writeToPlayer(player, byte(CMD_PINGPONG), generateSecret(player))
 		} else {
 			doLog(true, "malformed PING")
-			player.conn.Close()
+			//player.conn.Close()
 			return
 		}
 	case CMD_LOGIN:
@@ -70,7 +70,7 @@ func newParser(input []byte, player *playerData) {
 		writeToPlayer(player, RECV_LOBBYLIST, data)
 	case CMD_JOINLOBBY:
 
-		inputID := binary.BigEndian.Uint64(data)
+		inputID := binary.BigEndian.Uint32(data)
 
 		if inputID == 0 {
 			deleteFromLobby(player)
@@ -156,7 +156,7 @@ func newParser(input []byte, player *playerData) {
 			player.inLobby.lock.Unlock()
 		}
 	default:
-		doLog(true, "Received invalid: 0x%02X, %v\n", d, string(data))
+		doLog(true, "Received invalid: 0x%02X, %v", d, string(data))
 		player.conn.Close()
 		return
 	}

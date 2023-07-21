@@ -42,7 +42,7 @@ func generateSecret(player *playerData) []byte {
 	// Convert the timestamp to bytes
 	ID, _ := base64.StdEncoding.DecodeString(helloStr)
 	if player != nil && player.ID != 0 {
-		ID = []byte(strconv.FormatUint(player.ID, 18))
+		ID = []byte(strconv.FormatUint(uint64(player.ID), 18))
 	}
 
 	timeStampString := []byte(strconv.FormatInt(timestamp, 27))
@@ -134,7 +134,7 @@ func checkSecret(player *playerData, input []byte) bool {
 			return false
 		}
 	} else {
-		ID := strconv.FormatUint(player.ID, 18)
+		ID := strconv.FormatUint(uint64(player.ID), 18)
 		if playerID != ID {
 			return false
 		}

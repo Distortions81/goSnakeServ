@@ -97,7 +97,7 @@ func processLobbies() {
 							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.Direction) {
 							player.DeadFor = 1
 							if !player.isBot {
-								doLog(true, "%v %v #%v died at %v,%v in lobby %v.\n", ptype, player.Name, player.ID, player.Head.X, player.Head.Y, player.inLobby.Name)
+								doLog(true, "%v %v #%v died at %v,%v in lobby %v.", ptype, player.Name, player.ID, player.Head.X, player.Head.Y, player.inLobby.Name)
 							}
 							continue
 						}
@@ -155,7 +155,7 @@ func processLobbies() {
 					maxRespawn := 1
 					/* Respawn players in dead lobbies */
 					if playersAlive <= 2 && totalPlayers > 2 {
-						doLog(true, "Reviving AIs in lobby: %v", lobby.Name)
+						//doLog(true, "Reviving AIs in lobby: %v", lobby.Name)
 						for _, testP := range lobby.Players {
 							if testP.isBot && testP.Length == 0 && maxRespawn > 0 {
 								testP.Length = 3

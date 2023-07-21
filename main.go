@@ -49,7 +49,7 @@ func main() {
 
 	writeDB(true)
 
-	doLog(true, "Max random names: %v\n", namegenerator.GetMaxNames())
+	doLog(true, "Max random names: %v", namegenerator.GetMaxNames())
 
 	processLobbies()
 
