@@ -35,11 +35,10 @@ func processLobbies() {
 
 					lobby := lobbyList[l]
 
-					if !lobby.ShowApple {
+					if !lobby.showApple {
 						spawnApple(lobby)
 					}
 
-					lobby.Ticks++
 					playersAlive := 0
 					totalPlayers := 0
 
@@ -47,14 +46,14 @@ func processLobbies() {
 						totalPlayers++
 
 						/* Ignore, dead or not init */
-						if player.Length < 1 {
+						if player.length < 1 {
 							continue
 						}
 						if player.DeadFor > 0 {
 							if player.DeadFor > 4 {
-								player.Tiles = []XY{{}}
-								player.ID = 0
-								player.Length = 0
+								player.tiles = []XY{{}}
+								player.id = 0
+								player.length = 0
 								continue
 							}
 							player.DeadFor++
@@ -75,7 +74,7 @@ func processLobbies() {
 							aiMove(player)
 						}
 
-						head := player.Tiles[player.Length-1]
+						head := player.tiles[player.length-1]
 						if player.numDirs > 0 {
 							newDir := player.dirs[0]
 
@@ -87,32 +86,32 @@ func processLobbies() {
 							player.numDirs--
 
 							if newDir != reverseDir(player.oldDir) {
-								player.Direction = newDir
+								player.direction = newDir
 							}
-							player.oldDir = player.Direction
+							player.oldDir = player.direction
 						}
 
-						newHead := goDir(player.Direction, head)
+						newHead := goDir(player.direction, head)
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
-							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.Direction) {
+							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.direction) {
 							player.DeadFor = 1
 							if !player.isBot {
-								doLog(true, "%v %v #%v died at %v,%v in lobby %v.", ptype, player.Name, player.ID, player.Head.X, player.Head.Y, player.inLobby.Name)
+								doLog(true, "%v %v #%v died at %v,%v in lobby %v.", ptype, player.Name, player.id, player.head.X, player.head.Y, player.inLobby.Name)
 							}
 							continue
 						}
 
-						if lobby.ShowApple && didCollideApple(player) {
-							lobby.ShowApple = false
-							player.Tiles = append(player.Tiles, XY{X: newHead.X, Y: newHead.Y})
-							player.Length++
+						if lobby.showApple && didCollideApple(player) {
+							lobby.showApple = false
+							player.tiles = append(player.tiles, XY{X: newHead.X, Y: newHead.Y})
+							player.length++
 							if !player.isBot {
-								doLog(true, "%v %v ate an apple at %v,%v in lobby %v.", ptype, player.Name, player.Head.X, player.Head.Y, player.inLobby.Name)
+								doLog(true, "%v %v ate an apple at %v,%v in lobby %v.", ptype, player.Name, player.head.X, player.head.Y, player.inLobby.Name)
 							}
 						} else {
-							player.Tiles = append(player.Tiles[1:], XY{X: newHead.X, Y: newHead.Y})
+							player.tiles = append(player.tiles[1:], XY{X: newHead.X, Y: newHead.Y})
 						}
-						player.Head = head
+						player.head = head
 
 					}
 
@@ -157,27 +156,27 @@ func processLobbies() {
 					if playersAlive <= 2 && totalPlayers > 2 {
 						//doLog(true, "Reviving AIs in lobby: %v", lobby.Name)
 						for _, testP := range lobby.Players {
-							if testP.isBot && testP.Length == 0 && maxRespawn > 0 {
-								testP.Length = 3
+							if testP.isBot && testP.length == 0 && maxRespawn > 0 {
+								testP.length = 3
 								testP.DeadFor = -8
 								testP.isBot = true
 
 								maxRespawn--
 
-								var randx, randy uint16
+								var randx, randy uint8
 								for x := 0; x < 10000; x++ {
-									randx = uint16(rand.Intn(defaultBoardSize))
-									randy = uint16(rand.Intn(defaultBoardSize))
+									randx = uint8(rand.Intn(defaultBoardSize))
+									randy = uint8(rand.Intn(defaultBoardSize))
 									if !didCollidePlayer(testP.inLobby, testP) {
 										break
 									}
 								}
 
 								tiles := []XY{}
-								for x := 0; x < int(testP.Length); x++ {
+								for x := 0; x < int(testP.length); x++ {
 									tiles = append(tiles, XY{X: randx, Y: randy})
 								}
-								testP.Tiles = tiles
+								testP.tiles = tiles
 							}
 						}
 					}
@@ -213,12 +212,12 @@ func spawnApple(lobby *lobbyData) bool {
 	limit := int(lobby.boardSize*lobby.boardSize) * 100
 
 	for c := 0; c < limit; c++ {
-		rx, ry := uint16(rand.Intn(int(lobby.boardSize-1)))+1, uint16(rand.Intn(int(lobby.boardSize-1))+1)
+		rx, ry := uint8(rand.Intn(int(lobby.boardSize-1)))+1, uint8(rand.Intn(int(lobby.boardSize-1))+1)
 		for _, player := range lobby.Players {
-			for _, tile := range player.Tiles {
+			for _, tile := range player.tiles {
 				if tile.X != rx && tile.Y != ry {
-					lobby.ShowApple = true
-					lobby.Apple = XY{X: rx, Y: ry}
+					lobby.showApple = true
+					lobby.apple = XY{X: rx, Y: ry}
 					return true
 				}
 			}
@@ -232,9 +231,9 @@ func didCollideApple(player *playerData) bool {
 	if player.inLobby == nil {
 		return false
 	}
-	for _, tile := range player.Tiles {
-		if tile.X == player.inLobby.Apple.X &&
-			tile.Y == player.inLobby.Apple.Y {
+	for _, tile := range player.tiles {
+		if tile.X == player.inLobby.apple.X &&
+			tile.Y == player.inLobby.apple.Y {
 			return true
 		}
 	}
@@ -252,8 +251,8 @@ func didCollidePlayer(lobby *lobbyData, playerA *playerData) bool {
 			playerA.DeadFor = -8
 			return false
 		}
-		for _, tileA := range playerA.Tiles {
-			for _, tileB := range playerB.Tiles {
+		for _, tileA := range playerA.tiles {
+			for _, tileB := range playerB.tiles {
 				if tileA.X == tileB.X && tileA.Y == tileB.Y {
 					return true
 				}
@@ -270,14 +269,14 @@ func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
 		return false
 	}
 
-	head := playerA.Tiles[playerA.Length-1]
+	head := playerA.tiles[playerA.length-1]
 	newHead := goDir(dir, head)
 
 	for _, playerB := range lobby.Players {
 		if playerB.DeadFor > 0 {
 			continue
 		}
-		for _, tileA := range playerB.Tiles {
+		for _, tileA := range playerB.tiles {
 			if tileA.X == newHead.X && tileA.Y == newHead.Y {
 				return true
 			}
@@ -288,17 +287,17 @@ func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
 }
 
 func aiMove(ai *playerData) {
-	if !ai.isBot || ai.inLobby == nil || ai.Length < 1 {
+	if !ai.isBot || ai.inLobby == nil || ai.length < 1 {
 		return
 	}
 
-	dir := ai.Direction
+	dir := ai.direction
 	if rand.Intn(15) == 0 {
 		dir = uint8(rand.Intn(DIR_WEST + 1)) /* New test */
-		ai.Direction = dir
+		ai.direction = dir
 	}
 
-	head := ai.Tiles[ai.Length-1]
+	head := ai.tiles[ai.length-1]
 	newHead := goDir(dir, head)
 
 	/* If we keep going, will we collide with edge or another player? */
@@ -308,7 +307,7 @@ func aiMove(ai *playerData) {
 
 		/* Try another direction */
 		for x := 0; x < 256; x++ {
-			if x == int(ai.Direction) {
+			if x == int(ai.direction) {
 				continue
 			}
 
@@ -327,7 +326,7 @@ func aiMove(ai *playerData) {
 			} else {
 
 				/* Good, proceed */
-				ai.Direction = dir
+				ai.direction = dir
 				break
 			}
 
@@ -348,8 +347,9 @@ func binaryGameUpdate(lobby *lobbyData) []byte {
 	var outBuf = new(bytes.Buffer)
 
 	//Apple position
-	binary.Write(outBuf, binary.BigEndian, lobby.Apple.X)
-	binary.Write(outBuf, binary.BigEndian, lobby.Apple.Y)
+	binary.Write(outBuf, binary.BigEndian, lobby.showApple)
+	binary.Write(outBuf, binary.BigEndian, lobby.apple.X)
+	binary.Write(outBuf, binary.BigEndian, lobby.apple.Y)
 
 	//Number of players
 	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
@@ -358,12 +358,12 @@ func binaryGameUpdate(lobby *lobbyData) []byte {
 		binary.Write(outBuf, binary.BigEndian, player.DeadFor)
 
 		//Player Length
-		binary.Write(outBuf, binary.BigEndian, player.Length)
-		tLen := uint32(len(player.Tiles))
+		binary.Write(outBuf, binary.BigEndian, player.length)
+		tLen := uint32(len(player.tiles))
 		for x := uint32(0); x < tLen; x++ {
 			//Tile X/Y
-			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].X)
-			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].Y)
+			binary.Write(outBuf, binary.BigEndian, player.tiles[x].X)
+			binary.Write(outBuf, binary.BigEndian, player.tiles[x].Y)
 		}
 	}
 
@@ -384,17 +384,15 @@ func serializeLobbyBinary(lobby *lobbyData) []byte {
 
 	//Lobby data
 	binary.Write(outBuf, binary.BigEndian, lobby.ID)
-	binary.Write(outBuf, binary.BigEndian, lobby.Ticks)
-	binary.Write(outBuf, binary.BigEndian, lobby.Level)
-	binary.Write(outBuf, binary.BigEndian, lobby.ShowApple)
-	binary.Write(outBuf, binary.BigEndian, lobby.Apple.X)
-	binary.Write(outBuf, binary.BigEndian, lobby.Apple.Y)
+	binary.Write(outBuf, binary.BigEndian, lobby.showApple)
+	binary.Write(outBuf, binary.BigEndian, lobby.apple.X)
+	binary.Write(outBuf, binary.BigEndian, lobby.apple.Y)
 
 	//Number of players
 	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
 	for _, player := range lobby.Players {
 		//Player ID
-		binary.Write(outBuf, binary.BigEndian, player.ID)
+		binary.Write(outBuf, binary.BigEndian, player.id)
 
 		nameLen := uint16(len(player.Name))
 		//Player Name Length
@@ -408,12 +406,12 @@ func serializeLobbyBinary(lobby *lobbyData) []byte {
 		binary.Write(outBuf, binary.BigEndian, player.DeadFor)
 
 		//Player Length
-		binary.Write(outBuf, binary.BigEndian, player.Length)
-		tLen := uint32(len(player.Tiles))
+		binary.Write(outBuf, binary.BigEndian, player.length)
+		tLen := uint32(len(player.tiles))
 		for x := uint32(0); x < tLen; x++ {
 			//Tile position
-			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].X)
-			binary.Write(outBuf, binary.BigEndian, player.Tiles[x].Y)
+			binary.Write(outBuf, binary.BigEndian, player.tiles[x].X)
+			binary.Write(outBuf, binary.BigEndian, player.tiles[x].Y)
 		}
 	}
 

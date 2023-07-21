@@ -30,12 +30,12 @@ func newParser(input []byte, player *playerData) {
 			return
 		}
 
-		player.ID = makePlayerUID()
+		player.id = makePlayerUID()
 		player.lastActive = time.Now()
 		player.Name = genName()
 
 		pListLock.Lock()
-		pList[player.ID] = player
+		pList[player.id] = player
 		pListLock.Unlock()
 
 		b, err := json.Marshal(player)
@@ -70,7 +70,7 @@ func newParser(input []byte, player *playerData) {
 		writeToPlayer(player, RECV_LOBBYLIST, data)
 	case CMD_JOINLOBBY:
 
-		inputID := binary.BigEndian.Uint32(data)
+		inputID := binary.BigEndian.Uint16(data)
 
 		if inputID == 0 {
 			deleteFromLobby(player)
@@ -78,7 +78,7 @@ func newParser(input []byte, player *playerData) {
 		}
 
 		if player.inLobby != nil {
-			doLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.ID, player.inLobby.ID)
+			doLog(true, "commandParser: Join: player %v already in a lobby: %v,", player.id, player.inLobby.ID)
 			return
 		}
 		length := 3
@@ -90,9 +90,9 @@ func newParser(input []byte, player *playerData) {
 				lobby.lock.Lock()
 				defer lobby.lock.Unlock()
 
-				player.Direction = DIR_SOUTH
+				player.direction = DIR_SOUTH
 				player.oldDir = DIR_SOUTH
-				player.Tiles = []XY{}
+				player.tiles = []XY{}
 
 				/* Reuse dead slots */
 				var makeNew bool = true
@@ -115,10 +115,10 @@ func newParser(input []byte, player *playerData) {
 				}
 				player.inLobby = lobbyList[l]
 
-				var randx, randy uint16
+				var randx, randy uint8
 				for x := 0; x < 10000; x++ {
-					randx = uint16(rand.Intn(defaultBoardSize))
-					randy = uint16(rand.Intn(defaultBoardSize))
+					randx = uint8(rand.Intn(defaultBoardSize))
+					randy = uint8(rand.Intn(defaultBoardSize))
 					if !didCollidePlayer(player.inLobby, player) {
 						break
 					}
@@ -128,16 +128,16 @@ func newParser(input []byte, player *playerData) {
 				for x := 0; x <= length; x++ {
 					tiles = append(tiles, XY{X: randx, Y: randy})
 				}
-				player.Tiles = tiles
-				player.Length = uint32(length)
+				player.tiles = tiles
+				player.length = uint16(length)
 
-				doLog(true, "Player: %v joined lobby: %v at %v,%v", player.ID, inputID, randx, randy)
+				doLog(true, "Player: %v joined lobby: %v at %v,%v", player.id, inputID, randx, randy)
 				playerActivity(player)
 				writeToPlayer(player, CMD_JOINLOBBY, serializeLobbyBinary(lobby))
 				return
 			}
 		}
-		doLog(true, "Could not find lobby: %v for player: %v", inputID, player.ID)
+		doLog(true, "Could not find lobby: %v for player: %v", inputID, player.id)
 		return
 	case CMD_CREATELOBBY:
 		//create lobby
@@ -194,7 +194,7 @@ func deleteFromLobby(player *playerData) {
 	defer player.inLobby.lock.Unlock()
 
 	for p, target := range player.inLobby.Players {
-		if target.ID == player.ID {
+		if target.id == player.id {
 			player.inLobby.Players[p] = &playerData{}
 		}
 	}

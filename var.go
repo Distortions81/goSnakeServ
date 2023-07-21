@@ -32,7 +32,7 @@ func init() {
 
 func makeTestLobbies() {
 	for x := 0; x < testlobbies; x++ {
-		newLobby := &lobbyData{ID: makePlayerUID(), Name: genName(), boardSize: defaultBoardSize}
+		newLobby := &lobbyData{ID: makeLobbyUID(), Name: genName(), boardSize: defaultBoardSize}
 		lobbyList = append(lobbyList, newLobby)
 	}
 }
@@ -41,7 +41,7 @@ func makeAIs() {
 	length := 3
 	for x := 0; x < testPlayers; x++ {
 		id := makePlayerUID()
-		pList[id] = &playerData{Name: genName(), ID: id, Length: uint32(length), Direction: uint8(rand.Intn(DIR_WEST)), isBot: true, DeadFor: -8}
+		pList[id] = &playerData{Name: genName(), id: id, length: uint16(length), direction: uint8(rand.Intn(DIR_WEST)), isBot: true, DeadFor: -8}
 	}
 
 	for p := range pList {
@@ -51,10 +51,10 @@ func makeAIs() {
 
 		pList[p].inLobby = lobbyList[rVal]
 
-		var randx, randy uint16
+		var randx, randy uint8
 		for x := 0; x < 10000; x++ {
-			randx = uint16(rand.Intn(defaultBoardSize))
-			randy = uint16(rand.Intn(defaultBoardSize))
+			randx = uint8(rand.Intn(defaultBoardSize))
+			randy = uint8(rand.Intn(defaultBoardSize))
 			if !didCollidePlayer(pList[p].inLobby, pList[p]) {
 				break
 			}
@@ -64,6 +64,6 @@ func makeAIs() {
 		for x := 0; x < length; x++ {
 			tiles = append(tiles, XY{X: randx, Y: randy})
 		}
-		pList[p].Tiles = tiles
+		pList[p].tiles = tiles
 	}
 }

@@ -45,32 +45,24 @@ func goDir(dir uint8, pos XY) XY {
 
 var UIDLock sync.Mutex
 
+var playerTop uint32
+
 func makePlayerUID() uint32 {
 	UIDLock.Lock()
 	defer UIDLock.Unlock()
-	testID := rand.Uint32()
 
-	/* Keep regenerating until id is unique */
-	for pList[testID] != nil {
-		testID = rand.Uint32()
-		doLog(true, "makePlayerUID: Duplicate UID: %v, regenerating.", testID)
-	}
-
-	return testID
+	playerTop++
+	return playerTop
 }
 
-func makeLobbyUID() uint32 {
+var lobbyTop uint16
+
+func makeLobbyUID() uint16 {
 	UIDLock.Lock()
 	defer UIDLock.Unlock()
-	testID := rand.Uint32()
 
-	/* Keep regenerating until id is unique */
-	for lobbyList[testID] != nil {
-		testID = rand.Uint32()
-		doLog(true, "makeLobbyUID: Duplicate UID: %v, regenerating.", testID)
-	}
-
-	return testID
+	lobbyTop++
+	return lobbyTop
 }
 
 func filterName(input string) string {
@@ -125,16 +117,16 @@ func autoStartDir(player *playerData) uint8 {
 	if player != nil && player.inLobby != nil {
 		hbsize := player.inLobby.boardSize / 2
 
-		if player.Head.Y < (hbsize) {
-			player.Direction = DIR_NORTH
+		if player.head.Y < (hbsize) {
+			player.direction = DIR_NORTH
 		} else {
-			player.Direction = DIR_SOUTH
+			player.direction = DIR_SOUTH
 		}
 
-		if player.Head.X < (hbsize) {
-			player.Direction = DIR_EAST
+		if player.head.X < (hbsize) {
+			player.direction = DIR_EAST
 		} else {
-			player.Direction = DIR_WEST
+			player.direction = DIR_WEST
 		}
 
 	}

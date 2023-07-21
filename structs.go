@@ -8,15 +8,14 @@ import (
 )
 
 type lobbyData struct {
-	ID   uint32 `json:"i"`
+	ID   uint16 `json:"i"`
 	Name string `json:"n"`
 
-	Players   []*playerData `json:"p"`
-	Ticks     uint64        `json:"t"`
-	Level     uint16        `json:"l"`
-	ShowApple bool          `json:"s"`
-	Apple     XY            `json:"a"`
-	boardSize uint16
+	Players []*playerData `json:"p"`
+
+	showApple bool
+	apple     XY
+	boardSize uint8
 
 	dirty bool
 	lock  sync.Mutex
@@ -26,15 +25,15 @@ type playerData struct {
 	conn     *websocket.Conn
 	connLock sync.Mutex
 
-	ID   uint32 `json:"i"`
+	id   uint32
 	Name string `json:"n"`
 
-	DeadFor   int8   `json:"x"`
-	Length    uint32 `json:"l"`
-	Tiles     []XY   `json:"t"`
-	Head      XY     `json:"h"`
+	DeadFor   int8 `json:"x"`
+	length    uint16
+	tiles     []XY
+	head      XY
 	oldDir    uint8
-	Direction uint8 `json:"d"`
+	direction uint8
 	dirs      []uint8
 	numDirs   uint8
 
@@ -42,11 +41,11 @@ type playerData struct {
 	lastPing   time.Time
 
 	inLobby *lobbyData
-	myLobby *lobbyData
-	isBot   bool
+
+	isBot bool
 }
 
 type XY struct {
-	X uint16
-	Y uint16
+	X uint8
+	Y uint8
 }
