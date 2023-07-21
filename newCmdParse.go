@@ -49,7 +49,7 @@ func newParser(input []byte, player *playerData) {
 			writeToPlayer(player, byte(CMD_PINGPONG), generateSecret(player))
 		} else {
 			doLog(true, "malformed PING")
-			//player.conn.Close()
+			player.conn.Close()
 			return
 		}
 	case CMD_LOGIN:
