@@ -103,6 +103,8 @@ func processLobbies() {
 						if newHead.X > lobby.boardSize || newHead.X < 1 ||
 							newHead.Y > lobby.boardSize || newHead.Y < 1 || willCollidePlayer(player.inLobby, player, player.direction) {
 							player.DeadFor = 1
+							player.tiles = []XY{}
+							player.length = 0
 							if !player.isBot {
 								doLog(true, "%v %v #%v died at %v,%v in lobby %v.", ptype, player.Name, player.id, player.head.X, player.head.Y, player.inLobby.Name)
 							}
@@ -371,15 +373,15 @@ func binaryGameUpdate(lobby *lobbyData) []byte {
 	binary.Write(outBuf, binary.BigEndian, lobby.apple.Y)
 
 	//Number of players
-	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
+	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)-1))
 	for _, player := range lobby.Players {
 		//Player Dead For
 		binary.Write(outBuf, binary.BigEndian, player.DeadFor)
 
 		//Player Length
 		binary.Write(outBuf, binary.BigEndian, player.length)
-		tLen := uint32(len(player.tiles))
-		for x := uint32(0); x < tLen; x++ {
+
+		for x := uint16(0); x < player.length; x++ {
 			//Tile X/Y
 			binary.Write(outBuf, binary.BigEndian, player.tiles[x].X)
 			binary.Write(outBuf, binary.BigEndian, player.tiles[x].Y)
@@ -408,7 +410,7 @@ func serializeLobbyBinary(lobby *lobbyData) []byte {
 	binary.Write(outBuf, binary.BigEndian, lobby.apple.Y)
 
 	//Number of players
-	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
+	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)-1))
 	for _, player := range lobby.Players {
 		//Player ID
 		binary.Write(outBuf, binary.BigEndian, player.id)
@@ -426,8 +428,7 @@ func serializeLobbyBinary(lobby *lobbyData) []byte {
 
 		//Player Length
 		binary.Write(outBuf, binary.BigEndian, player.length)
-		tLen := uint32(len(player.tiles))
-		for x := uint32(0); x < tLen; x++ {
+		for x := uint16(0); x < player.length; x++ {
 			//Tile position
 			binary.Write(outBuf, binary.BigEndian, player.tiles[x].X)
 			binary.Write(outBuf, binary.BigEndian, player.tiles[x].Y)

@@ -126,7 +126,7 @@ func newParser(input []byte, player *playerData) {
 					tiles = append(tiles, XY{X: randx, Y: randy})
 				}
 				player.tiles = tiles
-				player.length = uint16(length)
+				player.length = uint16(length - 1)
 
 				doLog(true, "Player: %v joined lobby: %v at %v,%v", player.id, inputID, randx, randy)
 				playerActivity(player)
