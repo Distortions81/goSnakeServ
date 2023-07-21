@@ -374,10 +374,10 @@ func binaryGameUpdate(lobby *lobbyData) []byte {
 func serializeLobbyBinary(lobby *lobbyData) []byte {
 	var outBuf = new(bytes.Buffer)
 
-	nameLen := uint16(len(lobby.Name))
+	nameLen := uint8(len(lobby.Name))
 	//Lobby Name Len
 	binary.Write(outBuf, binary.BigEndian, nameLen)
-	for x := uint16(0); x < nameLen; x++ {
+	for x := uint8(0); x < nameLen; x++ {
 		//Lobby Name Character
 		binary.Write(outBuf, binary.BigEndian, byte(lobby.Name[x]))
 	}
