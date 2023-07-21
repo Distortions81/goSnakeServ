@@ -108,7 +108,8 @@ func checkSecret(player *playerData, input []byte) bool {
 	playerID := parts[1]
 
 	if player == nil {
-		if playerID != string(hello) {
+		ID := hello
+		if playerID != string(ID) {
 			doLog(true, "hello decode failed")
 			return false
 		}
@@ -116,7 +117,7 @@ func checkSecret(player *playerData, input []byte) bool {
 		ID := strconv.FormatUint(uint64(player.id), 18)
 		if playerID != ID {
 			doLog(true, "playerid incorrect")
-			//return false
+			return false
 		}
 	}
 
