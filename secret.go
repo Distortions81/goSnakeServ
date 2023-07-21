@@ -14,41 +14,28 @@ import (
 const helloStr = "w15r7Ju25b8C8OcDaNUnc6mT7AVn6TnSfBPYiV8cz0="
 const crypt = "x5XGXt8cvJo+v1fcJxh+EeIEWQc8hncABp3e9z0jIPA="
 
-/*
-func init() {
-	secret := generateSecret(nil)
-	if checkSecret(nil, secret) {
-		fmt.Println("1 Good.")
-	} else {
-		fmt.Println("1 Fail.")
-	}
+var key []byte
+var hello []byte
 
-	id := makeUID()
-	player := &playerData{ID: id}
-	secret = generateSecret(player)
-	if checkSecret(player, secret) {
-		fmt.Println("2 Good.")
-	} else {
-		fmt.Println("2 Fail.")
-	}
+func init() {
+	// Encryption key
+	key, _ = base64.StdEncoding.DecodeString(crypt)
+	hello, _ = base64.StdEncoding.DecodeString(helloStr)
 }
-*/
 
 func generateSecret(player *playerData) []byte {
 	// Get the current timestamp
 	timestamp := time.Now().UTC().Unix()
 
 	// Convert the timestamp to bytes
-	ID, _ := base64.StdEncoding.DecodeString(helloStr)
+
+	ID := hello
 	if player != nil && player.id != 0 {
 		ID = []byte(strconv.FormatUint(uint64(player.id), 18))
 	}
 
 	timeStampString := []byte(strconv.FormatInt(timestamp, 27))
 	payload := []byte(fmt.Sprintf("%v,%v", string(timeStampString), string(ID)))
-
-	// Encryption key
-	key, _ := base64.StdEncoding.DecodeString(crypt)
 
 	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)
@@ -91,9 +78,6 @@ func checkSecret(player *playerData, input []byte) bool {
 	nonce := input[:nonceSize]
 	encryptedTimestamp := input[nonceSize:]
 
-	// Encryption key
-	key, _ := base64.StdEncoding.DecodeString(crypt)
-
 	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -124,8 +108,7 @@ func checkSecret(player *playerData, input []byte) bool {
 	playerID := parts[1]
 
 	if player == nil {
-		ID, _ := base64.StdEncoding.DecodeString(helloStr)
-		if playerID != string(ID) {
+		if playerID != string(hello) {
 			doLog(true, "hello decode failed")
 			return false
 		}
