@@ -122,7 +122,7 @@ func newParser(input []byte, player *playerData) {
 				}
 
 				tiles := []XY{}
-				for x := 0; x <= length; x++ {
+				for x := 0; x < length; x++ {
 					tiles = append(tiles, XY{X: randx, Y: randy})
 				}
 				player.tiles = tiles

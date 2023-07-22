@@ -108,6 +108,7 @@ func processLobbies() {
 							}
 							continue
 						}
+						player.head = newHead
 
 						if lobby.showApple && didCollideApple(player) {
 							lobby.showApple = false
@@ -119,7 +120,6 @@ func processLobbies() {
 						} else {
 							player.tiles = append(player.tiles[1:], XY{X: newHead.X, Y: newHead.Y})
 						}
-						player.head = head
 
 					}
 
@@ -242,6 +242,7 @@ func spawnApple(lobby *lobbyData) bool {
 				}
 			}
 		}
+
 	}
 
 	return false
@@ -299,7 +300,7 @@ func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
 		for b, tileB := range playerB.tiles {
 			if tileB.X == newHead.X && tileB.Y == newHead.Y {
 				if !playerA.isBot && playerA.id == playerB.id {
-					doLog(true, "%v hit themself at %v,%v, going %v, position: %v", playerA.Name, newHead.X, newHead.Y, dirToString(playerA.direction), b)
+					doLog(true, "%v hit themself at %v,%v, going %v, position: %v, tiles: %v", playerA.Name, newHead.X, newHead.Y, dirToString(playerA.direction), b, playerA.tiles)
 				}
 				return true
 			}
