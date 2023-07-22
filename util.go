@@ -132,3 +132,19 @@ func autoStartDir(player *playerData) uint8 {
 	}
 	return DIR_SOUTH
 }
+
+func dirToString(dir uint8) string {
+	if dir == DIR_NONE {
+		return "none"
+	} else if dir == DIR_NORTH {
+		return "north"
+	} else if dir == DIR_EAST {
+		return "east"
+	} else if dir == DIR_SOUTH {
+		return "south"
+	} else if dir == DIR_WEST {
+		return "west"
+	} else {
+		return "???"
+	}
+}

@@ -228,7 +228,7 @@ func processLobbies() {
 /* Quick and dirty, optimize later */
 func spawnApple(lobby *lobbyData) bool {
 
-	limit := int(lobby.boardSize*lobby.boardSize) * 100
+	limit := int(lobby.boardSize) * int(lobby.boardSize) * 100
 
 	for c := 0; c < limit; c++ {
 		rx, ry := uint8(rand.Intn(int(lobby.boardSize-1)))+1, uint8(rand.Intn(int(lobby.boardSize-1))+1)
@@ -237,6 +237,7 @@ func spawnApple(lobby *lobbyData) bool {
 				if tile.X != rx && tile.Y != ry {
 					lobby.showApple = true
 					lobby.apple = XY{X: rx, Y: ry}
+					//doLog(true, "Spawned apple at %v,%v for lobby %v", rx, ry, lobby.Name)
 					return true
 				}
 			}
@@ -295,8 +296,11 @@ func willCollidePlayer(lobby *lobbyData, playerA *playerData, dir uint8) bool {
 		if playerB.DeadFor > 0 {
 			continue
 		}
-		for _, tileA := range playerB.tiles {
-			if tileA.X == newHead.X && tileA.Y == newHead.Y {
+		for b, tileB := range playerB.tiles {
+			if tileB.X == newHead.X && tileB.Y == newHead.Y {
+				if !playerA.isBot && playerA.id == playerB.id {
+					doLog(true, "%v hit themself at %v,%v, going %v, position: %v", playerA.Name, newHead.X, newHead.Y, dirToString(playerA.direction), b)
+				}
 				return true
 			}
 		}
