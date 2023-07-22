@@ -371,23 +371,23 @@ func binaryGameUpdate(lobby *lobbyData) []byte {
 	var outBuf = new(bytes.Buffer)
 
 	//Apple position
-	binary.Write(outBuf, binary.BigEndian, lobby.showApple)
-	binary.Write(outBuf, binary.BigEndian, lobby.apple.X)
-	binary.Write(outBuf, binary.BigEndian, lobby.apple.Y)
+	binary.Write(outBuf, binary.LittleEndian, lobby.showApple)
+	binary.Write(outBuf, binary.LittleEndian, lobby.apple.X)
+	binary.Write(outBuf, binary.LittleEndian, lobby.apple.Y)
 
 	//Number of players
-	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
+	binary.Write(outBuf, binary.LittleEndian, uint16(len(lobby.Players)))
 	for _, player := range lobby.Players {
 		//Player Dead For
-		binary.Write(outBuf, binary.BigEndian, player.DeadFor)
+		binary.Write(outBuf, binary.LittleEndian, player.DeadFor)
 
 		//Player Length
-		binary.Write(outBuf, binary.BigEndian, player.length)
+		binary.Write(outBuf, binary.LittleEndian, player.length)
 
 		for x := uint16(0); x < player.length; x++ {
 			//Tile X/Y
-			binary.Write(outBuf, binary.BigEndian, player.tiles[x].X)
-			binary.Write(outBuf, binary.BigEndian, player.tiles[x].Y)
+			binary.Write(outBuf, binary.LittleEndian, player.tiles[x].X)
+			binary.Write(outBuf, binary.LittleEndian, player.tiles[x].Y)
 		}
 	}
 
@@ -400,41 +400,41 @@ func serializeLobbyBinary(lobby *lobbyData) []byte {
 
 	nameLen := uint8(len(lobby.Name))
 	//Lobby Name Len
-	binary.Write(outBuf, binary.BigEndian, nameLen)
+	binary.Write(outBuf, binary.LittleEndian, nameLen)
 	for x := uint8(0); x < nameLen; x++ {
 		//Lobby Name Character
-		binary.Write(outBuf, binary.BigEndian, byte(lobby.Name[x]))
+		binary.Write(outBuf, binary.LittleEndian, byte(lobby.Name[x]))
 	}
 
 	//Lobby data
-	binary.Write(outBuf, binary.BigEndian, lobby.ID)
-	binary.Write(outBuf, binary.BigEndian, lobby.showApple)
-	binary.Write(outBuf, binary.BigEndian, lobby.apple.X)
-	binary.Write(outBuf, binary.BigEndian, lobby.apple.Y)
+	binary.Write(outBuf, binary.LittleEndian, lobby.ID)
+	binary.Write(outBuf, binary.LittleEndian, lobby.showApple)
+	binary.Write(outBuf, binary.LittleEndian, lobby.apple.X)
+	binary.Write(outBuf, binary.LittleEndian, lobby.apple.Y)
 
 	//Number of players
-	binary.Write(outBuf, binary.BigEndian, uint16(len(lobby.Players)))
+	binary.Write(outBuf, binary.LittleEndian, uint16(len(lobby.Players)))
 	for _, player := range lobby.Players {
 		//Player ID
-		binary.Write(outBuf, binary.BigEndian, player.id)
+		binary.Write(outBuf, binary.LittleEndian, player.id)
 
 		nameLen := uint16(len(player.Name))
 		//Player Name Length
-		binary.Write(outBuf, binary.BigEndian, nameLen)
+		binary.Write(outBuf, binary.LittleEndian, nameLen)
 		for x := uint16(0); x < nameLen; x++ {
 			//Player Name Character
-			binary.Write(outBuf, binary.BigEndian, byte(player.Name[x]))
+			binary.Write(outBuf, binary.LittleEndian, byte(player.Name[x]))
 		}
 
 		//Player Dead For
-		binary.Write(outBuf, binary.BigEndian, player.DeadFor)
+		binary.Write(outBuf, binary.LittleEndian, player.DeadFor)
 
 		//Player Length
-		binary.Write(outBuf, binary.BigEndian, player.length)
+		binary.Write(outBuf, binary.LittleEndian, player.length)
 		for x := uint16(0); x < player.length; x++ {
 			//Tile position
-			binary.Write(outBuf, binary.BigEndian, player.tiles[x].X)
-			binary.Write(outBuf, binary.BigEndian, player.tiles[x].Y)
+			binary.Write(outBuf, binary.LittleEndian, player.tiles[x].X)
+			binary.Write(outBuf, binary.LittleEndian, player.tiles[x].Y)
 		}
 	}
 

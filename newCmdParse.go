@@ -38,7 +38,7 @@ func newParser(input []byte, player *playerData) {
 		pListLock.Lock()
 		pList[player.id] = player
 		var outBuf = new(bytes.Buffer)
-		binary.Write(outBuf, binary.BigEndian, player.id)
+		binary.Write(outBuf, binary.LittleEndian, player.id)
 		pListLock.Unlock()
 
 		writeToPlayer(player, byte(RECV_LOCALPLAYER), outBuf.Bytes())
@@ -67,7 +67,7 @@ func newParser(input []byte, player *playerData) {
 		writeToPlayer(player, RECV_LOBBYLIST, data)
 	case CMD_JOINLOBBY:
 
-		inputID := binary.BigEndian.Uint16(data)
+		inputID := binary.LittleEndian.Uint16(data)
 
 		if inputID == 0 {
 			deleteFromLobby(player)
