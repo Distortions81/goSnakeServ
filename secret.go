@@ -5,22 +5,17 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
-	"fmt"
-	"strconv"
-	"strings"
 	"time"
 )
 
-const helloStr = "w15r7Ju25b8C8OcDaNUnc6mT7AVn6TnSfBPYiV8cz0="
+const hello = 2210441626
 const crypt = "x5XGXt8cvJo+v1fcJxh+EeIEWQc8hncABp3e9z0jIPA="
 
 var key []byte
-var hello []byte
 
 func init() {
 	// Encryption key
 	key, _ = base64.StdEncoding.DecodeString(crypt)
-	hello, _ = base64.StdEncoding.DecodeString(helloStr)
 }
 
 func generateSecret(player *playerData) []byte {
@@ -28,14 +23,13 @@ func generateSecret(player *playerData) []byte {
 	timestamp := time.Now().UTC().Unix()
 
 	// Convert the timestamp to bytes
-
-	ID := hello
+	var ID []byte = uint32ToByteArray(hello)
 	if player != nil && player.id != 0 {
-		ID = []byte(strconv.FormatUint(uint64(player.id), 18))
+		ID = uint32ToByteArray(player.id)
 	}
 
-	timeStampString := []byte(strconv.FormatInt(timestamp, 27))
-	payload := []byte(fmt.Sprintf("%v,%v", string(timeStampString), string(ID)))
+	var payload []byte = uint32ToByteArray(uint32(timestamp))
+	payload = append(payload, ID...)
 
 	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)
@@ -99,37 +93,29 @@ func checkSecret(player *playerData, input []byte) bool {
 		return false
 	}
 
-	parts := strings.Split(string(decryptedData), ",")
-	if len(parts) != 2 {
-		doLog(true, "split failed")
+	if len(decryptedData) < 8 {
+		doLog(true, "Decrypted data is invalid.")
 		return false
 	}
-	decodedTimestamp := []byte(parts[0])
-	playerID := parts[1]
+	decodedTimestamp := byteArrayToUint32(decryptedData[0:])
+	playerID := byteArrayToUint32(decryptedData[4:])
 
 	if player == nil {
-		ID := hello
-		if playerID != string(ID) {
+		if playerID != hello {
 			doLog(true, "hello decode failed")
 			return false
 		}
 	} else {
-		ID := strconv.FormatUint(uint64(player.id), 18)
-		if playerID != ID {
+		if playerID != player.id {
 			doLog(true, "playerid incorrect")
 			return false
 		}
 	}
 
 	// Convert the decrypted timestamp bytes to an integer
-	timestamp, err := strconv.ParseInt(string(decodedTimestamp), 27, 64)
-	if err != nil {
-		doLog(true, "timestamp parse failed")
-		return false
-	}
 
 	// Convert the timestamp to time.Time
-	t := time.Unix(timestamp, 0)
+	t := time.Unix(int64(decodedTimestamp), 0)
 
 	// Verify if the timestamp is within an acceptable range
 	acceptableDuration := 10 * time.Second
