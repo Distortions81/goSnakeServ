@@ -94,7 +94,7 @@ func newParser(input []byte, player *playerData) {
 				/* Reuse dead slots */
 				var makeNew bool = true
 				for f, find := range lobby.Players {
-					if find.DeadFor > 4 {
+					if find.DeadFor > 4 || find.length <= 0 || find.id == player.id {
 						if find.inLobby != nil {
 							if find.inLobby.ID == lobby.ID {
 								continue
