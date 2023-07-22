@@ -1,0 +1,53 @@
+/* Early connect */ b < 0x10
+0x00 reserved
+0x01 init
+0x02 ping-pong
+
+/* Login */ b < 0x20
+0x10 login (login?)
+0x11 set name (name)
+
+/* Lobby */ b < 0x30
+0x20 get lobbies
+0x21 join lobby (id)
+0x22 create lobby (name)
+0x23 set lobby settings (json)
+
+/* Game */ b < 0x40
+0x30 spawn
+0x31 goDir (dir)
+
+/* RESERVED */ b < 0x50
+0x40 - 0x4F
+
+/* response only */ b < 0x60
+0x50 localplayer (json)
+0x51 lobbylist (json)
+0x52 lobbydata (json)
+0x53 keyframe (json)
+0x54 player update (binary)
+0x55 update apple (binary)
+
+/* RESERVED */
+0x60 - 0xFF
+
+CMD_INIT     = 0x01
+CMD_PINGPONG = 0x02
+
+CMD_LOGIN = 0x10
+CMD_NAME  = 0x11
+
+CMD_GETLOBBIES  = 0x20
+CMD_JOINLOBBY   = 0x21
+CMD_CREATELOBBY = 0x22
+CMD_SETLOBBY    = 0x23
+
+CMD_SPAWN = 0x30
+CMD_GODIR = 0x31
+
+RECV_LOCALPLAYER  = 0x50
+RECV_LOBBYLIST    = 0x51
+RECV_LOBBYDATA    = 0x52
+RECV_KEYFRAME     = 0x53
+RECV_PLAYERUPDATE = 0x54
+RECV_APPLEPOS     = 0x55
