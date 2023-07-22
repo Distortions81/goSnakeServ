@@ -132,7 +132,7 @@ func checkSecret(player *playerData, input []byte) bool {
 	t := time.Unix(timestamp, 0)
 
 	// Verify if the timestamp is within an acceptable range
-	acceptableDuration := 5 * time.Minute
+	acceptableDuration := 10 * time.Second
 	currentTime := time.Now()
 	diff := currentTime.Sub(t)
 	if diff <= acceptableDuration || diff >= acceptableDuration {
