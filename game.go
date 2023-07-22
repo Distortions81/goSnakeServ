@@ -111,7 +111,7 @@ func processLobbies() {
 						player.head = newHead
 
 						if lobby.showApple && didCollideApple(player) {
-							lobby.showApple = false
+							lobbyList[l].showApple = false
 							player.tiles = append(player.tiles, XY{X: newHead.X, Y: newHead.Y})
 							player.length++
 							if !player.isBot {
