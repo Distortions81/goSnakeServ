@@ -110,7 +110,7 @@ func processLobbies() {
 						}
 						player.head = newHead
 
-						if lobby.showApple && didCollideApple(player) {
+						if lobby.showApple && willCollideApple(player) {
 							lobbyList[l].showApple = false
 							player.tiles = append(player.tiles, XY{X: newHead.X, Y: newHead.Y})
 							player.length++
@@ -248,16 +248,16 @@ func spawnApple(lobby *lobbyData) bool {
 	return false
 }
 
-func didCollideApple(player *playerData) bool {
+func willCollideApple(player *playerData) bool {
 	if player.inLobby == nil {
 		return false
 	}
-	for _, tile := range player.tiles {
-		if tile.X == player.inLobby.apple.X &&
-			tile.Y == player.inLobby.apple.Y {
-			return true
-		}
+
+	if player.head.X == player.inLobby.apple.X &&
+		player.head.Y == player.inLobby.apple.Y {
+		return true
 	}
+
 	return false
 }
 
