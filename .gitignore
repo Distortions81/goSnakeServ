@@ -1,0 +1,8 @@
+fullchain.pem
+privkey.pem
+log
+goSnakeServ
+www/main.wasm.gz
+server.key
+scores.json
+.vscode
