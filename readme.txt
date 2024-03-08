@@ -1,3 +1,6 @@
+Client: https://github.com/Distortions81/goSnake
+
+Cert how-to:
 Use a real cert, or letsencrypt.
 privkey.pem
 fullchain.pem
