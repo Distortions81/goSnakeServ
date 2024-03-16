@@ -117,8 +117,8 @@ func cmd_pingpong(player *playerData, data *[]byte) {
 		writeToPlayer(player, CMD_PINGPONG, generateSecret(player))
 	} else {
 		doLog(true, "malformed PING")
-		killConnection(player.conn, true)
 		deleteFromLobby(player)
+		killConnection(player.conn, true)
 		player.conn = nil
 		delete(playerList, player.id)
 		delete(connPList, player.id)
@@ -248,8 +248,8 @@ func writeToPlayer(player *playerData, header CMD, input []byte) bool {
 	}
 	if err != nil {
 		doLog(true, "Error writing response: %v", err)
-		killConnection(player.conn, false)
 		deleteFromLobby(player)
+		killConnection(player.conn, false)
 		player.conn = nil
 		delete(playerList, player.id)
 		delete(connPList, player.id)

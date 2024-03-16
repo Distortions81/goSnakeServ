@@ -60,8 +60,8 @@ func timeoutLoop() {
 			if time.Since(player.lastPing) > cTimeout {
 				doLog(true, "Authorization timed out for #%v.", player.id)
 
-				killConnection(player.conn, false)
 				deleteFromLobby(player)
+				killConnection(player.conn, false)
 				player.conn = nil
 				deleteMeList = append(deleteMeList, player.id)
 			}

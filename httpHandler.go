@@ -89,8 +89,8 @@ func handleConnection(conn *websocket.Conn) {
 		if err != nil {
 			doLog(true, "Error on connection read: %v", err)
 
-			killConnection(conn, true)
 			deleteFromLobby(player)
+			killConnection(conn, true)
 			player.conn = nil
 
 			pListLock.Lock()
