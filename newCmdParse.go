@@ -271,15 +271,15 @@ func deleteFromLobby(player *playerData) {
 
 	player.inLobby.numConn--
 
+	player.inLobby.dirty = true
+	player.deadFor = 1
+
 	for t, test := range player.inLobby.players {
 		if test.id == player.id {
 			player.inLobby.players[t] = nullPlayer
 			break
 		}
 	}
-
-	player.inLobby.dirty = true
-	player.deadFor = 1
 	player.inLobby = nil
 
 	doLog(true, "Deleted %v from lobby", player.name)
