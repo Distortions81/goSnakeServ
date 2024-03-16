@@ -56,16 +56,6 @@ func processLobbies() {
 					numNames := 0
 					for _, player := range lobby.players {
 
-						if player.deadFor < 1 && player.id != 0 {
-							if numNames <= lobbyMaxNames {
-								if numNames > 0 {
-									lobby.PlayerNames = lobby.PlayerNames + ", "
-								}
-								numNames++
-								lobby.PlayerNames = lobby.PlayerNames + player.name
-							}
-						}
-
 						/*Found players instead of using len()*/
 						totalPlayers++
 
@@ -73,6 +63,15 @@ func processLobbies() {
 						if player.length < 1 || player.id == 0 {
 							continue
 						}
+
+						if numNames <= lobbyMaxNames {
+							if numNames > 0 {
+								lobby.PlayerNames = lobby.PlayerNames + ", "
+							}
+							numNames++
+							lobby.PlayerNames = lobby.PlayerNames + player.name
+						}
+
 						/* Player is now dead */
 						if player.deadFor > 0 {
 
