@@ -52,7 +52,7 @@ func dbLoop() {
 func timeoutLoop() {
 	for {
 
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 1)
 
 		pListLock.Lock()
 		var deleteMeList []uint32
