@@ -262,12 +262,12 @@ var nullPlayer = &playerData{id: 0, deadFor: 1, length: 0, tiles: []XY{}}
 
 func deleteFromLobby(player *playerData) {
 
-	player.inLobby.lock.Lock()
-	defer player.inLobby.lock.Unlock()
-
 	if player.inLobby == nil {
 		return
 	}
+
+	player.inLobby.lock.Lock()
+	defer player.inLobby.lock.Unlock()
 
 	player.inLobby.numConn--
 	player.inLobby.dirty = true
