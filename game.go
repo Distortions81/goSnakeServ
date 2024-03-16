@@ -53,14 +53,15 @@ func processLobbies() {
 					totalPlayers := 0
 
 					lobby.PlayerNames = ""
-					for p, player := range lobby.players {
+					numNames := 0
+					for _, player := range lobby.players {
 
 						if player.deadFor == 0 {
-
-							if p <= lobbyMaxNames {
-								if p > 0 {
+							if numNames <= lobbyMaxNames {
+								if numNames > 0 {
 									lobby.PlayerNames = lobby.PlayerNames + ", "
 								}
+								numNames++
 								lobby.PlayerNames = lobby.PlayerNames + player.name
 							}
 						}
