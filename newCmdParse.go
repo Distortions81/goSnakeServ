@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -99,7 +100,7 @@ func cmd_init(player *playerData, data *[]byte) {
 
 	player.id = makePlayerUID()
 	player.lastActive = time.Now()
-	player.name = genName()
+	player.name = fmt.Sprintf("Player-%v", player.id)
 
 	pListLock.Lock()
 	playerList[player.id] = player

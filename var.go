@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"sync"
 )
@@ -34,7 +35,8 @@ func init() {
 
 func makeTestLobbies() {
 	for x := 0; x < testlobbies; x++ {
-		newLobby := &lobbyData{dirty: true, ID: makeLobbyUID(), Name: genName(), boardSize: defaultBoardSize, grid: make(map[XY]bool, defaultBoardSize*defaultBoardSize)}
+		lobID := makeLobbyUID()
+		newLobby := &lobbyData{dirty: true, ID: lobID, Name: fmt.Sprintf("Lobby-%v", lobID), boardSize: defaultBoardSize, grid: make(map[XY]bool, defaultBoardSize*defaultBoardSize)}
 		lobbyList = append(lobbyList, newLobby)
 	}
 }
@@ -43,7 +45,7 @@ func makeAIs() {
 	length := 3
 	for x := 0; x < testPlayers; x++ {
 		id := makePlayerUID()
-		playerList[id] = &playerData{name: genName(), id: id, length: uint16(length), direction: DIR(rand.Intn(int(DIR_WEST))), isBot: true, deadFor: -8}
+		playerList[id] = &playerData{name: fmt.Sprintf("Bot-%v", id), id: id, length: uint16(length), direction: DIR(rand.Intn(int(DIR_WEST))), isBot: true, deadFor: -8}
 	}
 
 	for p := range playerList {
