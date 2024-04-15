@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"runtime/debug"
 	"time"
 
@@ -68,6 +69,36 @@ func main() {
 			return true
 		}
 	}
+
+	go func() {
+		for {
+			time.Sleep(time.Second * 5)
+
+			filePath := "fullchain.pem"
+			initialStat, erra := os.Stat(filePath)
+
+			if erra != nil {
+				continue
+			}
+
+			for initialStat != nil {
+				time.Sleep(time.Second * 5)
+
+				stat, errb := os.Stat(filePath)
+				if errb != nil {
+					break
+				}
+
+				if stat.Size() != initialStat.Size() || stat.ModTime() != initialStat.ModTime() {
+					doLog(true, "Cert updated, closing.")
+					time.Sleep(time.Second * 5)
+					os.Exit(0)
+					break
+				}
+			}
+
+		}
+	}()
 
 	/* Start server*/
 	doLog(true, "Starting server...")
